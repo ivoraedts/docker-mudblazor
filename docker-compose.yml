@@ -1,0 +1,10 @@
+services:
+  docker-mudblazor:
+    image: ivoraedts/hello-docker-mudblazor:latest
+    #restart: unless-stopped
+    #volumes:
+     # - /volume1/docker/hello-docker-mudblazor/data:/app/data
+    ports:
+      # <Host Port>:<Container Port>
+      - "3080:8080"
+      - "3081:8081"
