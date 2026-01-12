@@ -1,0 +1,44 @@
+@page "/getdata"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+
+<h3>GetDataComponent</h3>
+
+@if (events == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var ev in events)
+            {
+                <tr>
+                    <td>@ev.Id</td>
+                    <td>@ev.Title</td>
+                    <td>@ev.Description</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@inject HttpClient Http
+@code {
+    private List<CalendarEvent> events;
+
+    protected override async Task OnInitializedAsync()
+    {
+        //events = await Http.GetFromJsonAsync<List<CalendarEvent>>("http://localhost:5078/api/values");
+        var apiUrl = NavigationManager.BaseUri + "api/values";
+        events = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+    }
+}

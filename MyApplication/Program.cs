@@ -8,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+builder.Services.AddControllers();
+builder.Services.AddHttpClient("MyApplication");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -46,5 +48,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MyApplication.Client._Imports).Assembly);
+
+app.MapControllers();
 
 app.Run();
