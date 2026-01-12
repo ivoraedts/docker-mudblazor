@@ -33,11 +33,13 @@ else
 
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
 <MudText Class="mb-4">Id of last item: @idOfLastItem</MudText>
+<MudText Class="mb-4">Last response: @lastResponse</MudText>
 
 @inject HttpClient Http
 @code {
     private List<CalendarEvent> events;
     private int idOfLastItem = 0;
+    private string lastResponse = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -56,13 +58,13 @@ else
 
            var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
     
-    // Debug: Check response content
-    var responseContent = await response.Content.ReadAsStringAsync(); 
+    lastResponse = await response.Content.ReadAsStringAsync(); 
 
-    //var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
-    //var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
-    //idOfLastItem = addedEvent.Id;
-        //post event to api...
+        if (response.IsSuccessStatusCode)
+    {
+        var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
+        idOfLastItem = addedEvent.Id;
+    }
 
         events = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
     }

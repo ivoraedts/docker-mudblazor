@@ -24,9 +24,6 @@ public class CalendarEventController : ControllerBase
     {
         _context.CalendarEvents.Add(calendarEvent);
         await _context.SaveChangesAsync();
-    
-        //return Ok(calendarEvent);
-        //return calendarEvent;
-        return CreatedAtAction("GetCalendarEvent", new { id = calendarEvent.Id }, calendarEvent);
+        return Ok(calendarEvent);
     }
 }
