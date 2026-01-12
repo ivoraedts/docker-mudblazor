@@ -20,7 +20,9 @@ services:
     container_name: docker-mudblazor.postgres
     #command: postgres -c max_connections=100
     volumes:  
-      - ./docker/pgdata:/var/lib/postgresql/data/pgdata
+    # This fix applies to version 18 and later. before it could mount to /var/lib/postgresql/data
+    # This fix applies to version 18 and later: mount to /var/lib/postgresql/docker works, but does not persist
+      - ./docker/pgdata:/var/lib/postgresql
     networks:
       - docker-mudblazor
     environment:
