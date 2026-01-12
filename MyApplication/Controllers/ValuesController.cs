@@ -1,12 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using MyApplication.Data;
 
-[Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+[Route("api/[controller]")]
 [ApiController]
-public class ValuesController : ControllerBase
+public class CalendarEventController : ControllerBase
 {
-    private readonly MyApplication.Data.MudBlazorDbContext _context;
-    public ValuesController(MyApplication.Data.MudBlazorDbContext context)
+    private readonly MudBlazorDbContext _context;
+    public CalendarEventController(MudBlazorDbContext context)
     {
         _context = context;
     }
@@ -16,5 +16,17 @@ public class ValuesController : ControllerBase
     public async Task<ActionResult<IEnumerable<CalendarEvent>>> CalendarEvents()
     {
         return await _context.CalendarEvents.AsAsyncEnumerable().ToListAsync();
+    }
+
+    // POST: api/Values
+    [HttpPost]
+    public async Task<ActionResult<CalendarEvent>> PostCalendarEvent(CalendarEvent calendarEvent)
+    {
+        _context.CalendarEvents.Add(calendarEvent);
+        await _context.SaveChangesAsync();
+    
+        //return Ok(calendarEvent);
+        //return calendarEvent;
+        return CreatedAtAction("GetCalendarEvent", new { id = calendarEvent.Id }, calendarEvent);
     }
 }

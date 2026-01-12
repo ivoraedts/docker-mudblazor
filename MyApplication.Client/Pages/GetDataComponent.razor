@@ -31,14 +31,39 @@ else
     </table>
 }
 
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
+<MudText Class="mb-4">Id of last item: @idOfLastItem</MudText>
+
 @inject HttpClient Http
 @code {
     private List<CalendarEvent> events;
+    private int idOfLastItem = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        //events = await Http.GetFromJsonAsync<List<CalendarEvent>>("http://localhost:5078/api/values");
-        var apiUrl = NavigationManager.BaseUri + "api/values";
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        events = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+    }
+
+    private async Task AddItem()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var newEvent = new CalendarEvent
+        {
+            Title = "New Event",
+            Description = $"This is a new event that was created at {DateTime.Now}."
+        };
+
+           var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
+    
+    // Debug: Check response content
+    var responseContent = await response.Content.ReadAsStringAsync(); 
+
+    //var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
+    //var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
+    //idOfLastItem = addedEvent.Id;
+        //post event to api...
+
         events = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
     }
 }
