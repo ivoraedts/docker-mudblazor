@@ -1,0 +1,50 @@
+networks:
+  docker-mudblazor:
+    external: false
+
+services:
+  docker-mudblazor:
+    build:
+      context: .
+      dockerfile: MyApplication/Dockerfile
+    networks:
+      - docker-mudblazor
+    volumes:
+     # - /volume1/docker/hello-docker-mudblazor/data:/app/data
+      - ./docker/mudblazor:/app/data
+    ports:
+      # <Host Port>:<Container Port>
+      - "3080:8080"
+      - "3081:8081"
+
+  postgres:
+    image: postgres:latest
+    container_name: docker-mudblazor.postgres
+    #command: postgres -c max_connections=100
+    volumes:  
+    # This fix applies to version 18 and later. before it could mount to /var/lib/postgresql/data
+    # This fix applies to version 18 and later: mount to /var/lib/postgresql/docker works, but does not persist
+      - ./docker/pgdata:/var/lib/postgresql
+    networks:
+      - docker-mudblazor
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+    ports:
+      # <Host Port>:<Container Port>
+      - "5432:5432"     
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: docker-mudblazor.pgadmin
+    volumes:
+      - ./docker/pgadmin:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    networks:
+      - docker-mudblazor
+    ports:
+      # <Host Port>:<Container Port>
+      - "5050:80"
+
