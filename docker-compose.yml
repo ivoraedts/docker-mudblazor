@@ -5,6 +5,10 @@ networks:
 services:
   docker-mudblazor:
     image: ivoraedts/hello-docker-mudblazor:latest
+    depends_on:
+      postgres: 
+        condition: service_healthy
+        restart: true
     networks:
       - docker-mudblazor
     volumes:
@@ -17,6 +21,12 @@ services:
 
   postgres:
     image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
     container_name: docker-mudblazor.postgres
     #command: postgres -c max_connections=100
     volumes:  

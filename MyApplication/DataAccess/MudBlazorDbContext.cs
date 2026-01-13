@@ -25,7 +25,10 @@ namespace MyApplication.Data
         public static IServiceCollection AddMudBlazorDbContext(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<MudBlazorDbContext>(options =>
-                options.UseNpgsql(configuration.GetConnectionString("MudBlazorDatabase"))
+                options.UseNpgsql(
+                    configuration.GetConnectionString("MudBlazorDatabase"),
+                    npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()
+                )
             );
 
             return services;

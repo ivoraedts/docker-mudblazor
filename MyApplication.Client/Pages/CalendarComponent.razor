@@ -20,7 +20,15 @@
     </PagerContent>
 </MudTable>
 
+<h3>Get Data</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="GetData">Get Data</MudButton>
+<h3>Get Fake Data</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="GetFakeData">Get Fake Data</MudButton>
+
 <h3>Add Item</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="ShowLocalUrl">ShowLocalUrl</MudButton>
+<MudText Class="mb-4">Local Url: @localUrl</MudText>
+
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
 <MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
@@ -33,14 +41,35 @@
     private List<CalendarEvent> events = new List<CalendarEvent>();
     private int idOfLastItem = 0;
     private string lastResponse = string.Empty;
+    private string localUrl = string.Empty;
     private string newTitle = string.Empty;
     private string newDescription = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    private void ShowLocalUrl()
+    {
+        localUrl = NavigationManager.BaseUri;
+    }
+
+    private async Task GetData()
     {
         var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
         var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
         if (result != null) events = result;
+    }
+
+    private async Task GetFakeData()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/fakedata";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //newTitle = NavigationManager.BaseUri + "api/calendarevent";
+        @* var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result; *@
     }
 
     private async Task AddItem()

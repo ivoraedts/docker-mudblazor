@@ -38,8 +38,16 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
+// Avoid forcing HTTPS inside containers where no TLS cert is configured.
+// When running in Docker we listen on HTTP and skip HTTPS redirection so
+// SignalR WebSockets aren't broken by an unavailable HTTPS endpoint.
+var runningInContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+    "true", StringComparison.OrdinalIgnoreCase);
+if (!runningInContainer)
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 
