@@ -45,19 +45,13 @@ services:
       POSTGRES_PASSWORD: strong-password
     ports:
       # <Host Port>:<Container Port>
-      - "5432:5432"     
+      - "1234:5432"   
 
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: docker-mudblazor.pgadmin
-    volumes:
-      - ./docker/pgadmin:/var/lib/pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
-      PGADMIN_DEFAULT_PASSWORD: strong-password
+  adminer:
+    image: adminer:latest
+    container_name: docker-mudblazor.adminer    
     networks:
       - docker-mudblazor
     ports:
       # <Host Port>:<Container Port>
-      - "5050:80"
-
+      - "8080:8080"
