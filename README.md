@@ -27,6 +27,8 @@ So after reinstalling DSM, started using the Synology as a NAS with file mounts 
 ...and even after trying Synology Photo's, which is quite funny
 ...it was time to try something new.
 
+![Picture of a network switch, a Synology DS220+ and a UPS.](/assets/images/SynologyDS220PlusWithUPS.jpeg)
+
 I saw a .NET Zuid presentation about Mud Blazor, while I never played with Blazor before, and I decided that I am going to try to get some Mud Blazor application to run via Docker on my Synology.
 The cool thing is, that this Synology only uses in between 4.41W (Idle) and 14.69W (Max) of power, so there is no real 'harm' in having this thing run all the time.
 Especially not when comparing it to my Desktop, that needed a 500W Power Supply as the 400W Power Supply could not handle the start-up of the graphical card.
