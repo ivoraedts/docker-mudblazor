@@ -45,6 +45,14 @@ The CPU Mark (higher is better) is an indication of how fast a CPU is, which is 
 
 ### About Docker-Mudblazor
 
-This project just started with me playing around with a MudBlazor-project that I run with Docker on my Synology.
+So after seeing the presentation, I was wondering on what to make in MudBlazor.
+Well initially, it was just time to find out if the default Hello-MudBlazor would run.
+I was even in doubt over in which editor to play around.
+As there is no point in hiding my source, Visual Studio by [Microsoft(https://visualstudio.microsoft.com/free-developer-offers/)] or Rider [by JetBrains(https://www.jetbrains.com/rider/buy/?section=personal&billing=yearly)] would be free anyway.
+But for some reason, I fell like experimenting with Visual Studio Code, which is free by definition and which I have only used for some web development in the past.
+
+So initially it was just a matter of following the [MudBlazor Tutorial(https://mudblazor.com/getting-started/installation)] in order to get things to work locally in Windows.
+
+....
 
 I made add some more documentation when I feel like playing around with [markdown stuff](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
