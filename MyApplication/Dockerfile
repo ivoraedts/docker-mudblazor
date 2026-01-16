@@ -3,8 +3,8 @@ WORKDIR /app
 EXPOSE 8080
 EXPOSE 8081
 
-# Listen on HTTP on all interfaces inside container so host -> container port mapping works.
-ENV ASPNETCORE_URLS=http://+:8080
+# Listen on HTTP and HTTPS on all interfaces inside container so host -> container port mapping works.
+ENV ASPNETCORE_URLS=http://+:8080;http://+:8081
 # Signal to the app that it's running in a container (used to skip HTTPS redirection).
 ENV DOTNET_RUNNING_IN_CONTAINER=true
 
