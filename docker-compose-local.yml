@@ -4,7 +4,9 @@ networks:
 
 services:
   docker-mudblazor:
-    image: ivoraedts/hello-docker-mudblazor:latest
+    build:
+      context: .
+      dockerfile: MyApplication/Dockerfile
     depends_on:
       postgres: 
         condition: service_healthy

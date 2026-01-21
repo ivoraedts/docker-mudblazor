@@ -1,0 +1,97 @@
+@page "/calendar"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+
+<h3>Do stuff with Calendar data</h3>
+
+<MudTable Items="events" Hover="true" Bordered="true" Striped="true" Class="mb-4">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Description</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5, 10, 25 }" />
+    </PagerContent>
+</MudTable>
+
+<h3>Get Data</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="GetData">Get Data</MudButton>
+<h3>Get Fake Data</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="GetFakeData">Get Fake Data</MudButton>
+
+<h3>Add Item</h3>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="ShowLocalUrl">ShowLocalUrl</MudButton>
+<MudText Class="mb-4">Local Url: @localUrl</MudText>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
+<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
+<MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
+
+<MudText Class="mb-4">Id of last item: @idOfLastItem</MudText>
+<MudText Class="mb-4">Last response: @lastResponse</MudText>
+
+@inject HttpClient Http
+@code {
+    private List<CalendarEvent> events = new List<CalendarEvent>();
+    private int idOfLastItem = 0;
+    private string lastResponse = string.Empty;
+    private string localUrl = string.Empty;
+    private string newTitle = string.Empty;
+    private string newDescription = string.Empty;
+
+    private void ShowLocalUrl()
+    {
+        localUrl = NavigationManager.BaseUri;
+    }
+
+    private async Task GetData()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result;
+    }
+
+    private async Task GetFakeData()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/fakedata";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //newTitle = NavigationManager.BaseUri + "api/calendarevent";
+        @* var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result; *@
+    }
+
+    private async Task AddItem()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var newEvent = new CalendarEvent
+        {
+            Title = newTitle != null ? newTitle : "New Title",
+            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}"
+        };
+
+        var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
+    
+        lastResponse = await response.Content.ReadAsStringAsync(); 
+
+        if (response.IsSuccessStatusCode)
+        {
+            var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
+            if (addedEvent != null) idOfLastItem = addedEvent.Id;
+        }
+
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result;
+    }
+}

@@ -1,18 +1,30 @@
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using MyApplication.Client.Pages;
 using MyApplication.Components;
+using MyApplication.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add MudBlazor services
 builder.Services.AddMudServices();
+builder.Services.AddControllers();
+builder.Services.AddHttpClient("MyApplication");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
+builder.Services.AddMudBlazorDbContext(builder.Configuration);
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<MyApplication.Data.MudBlazorDbContext>();
+    context.Database.Migrate();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -26,8 +38,16 @@ else
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
-
+// Avoid forcing HTTPS inside containers where no TLS cert is configured.
+// When running in Docker we listen on HTTP and skip HTTPS redirection so
+// SignalR WebSockets aren't broken by an unavailable HTTPS endpoint.
+var runningInContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+    "true", StringComparison.OrdinalIgnoreCase);
+if (!runningInContainer)
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 
@@ -36,5 +56,7 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MyApplication.Client._Imports).Assembly);
+
+app.MapControllers();
 
 app.Run();
