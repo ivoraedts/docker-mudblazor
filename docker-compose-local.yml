@@ -16,13 +16,16 @@ services:
     volumes:
      # - /volume1/docker/hello-docker-mudblazor/data:/app/data
       - ./docker/mudblazor:/app/data
+      - ./docker/https:/app/https:ro
     ports:
       # <Host Port>:<Container Port>
       - "3080:8080"
-      - "3081:8081"
+      - "3443:8081"
     environment:
       # Connection string for the database (overrides appsettings.json)
       ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
+      # Tell the app that HTTPS is on the external port 3443
+      ASPNETCORE_HTTPS_PORT: 3443
       # Other configurable parameters can go here
       ASPNETCORE_ENVIRONMENT: Production
 

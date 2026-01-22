@@ -518,3 +518,51 @@ Here is a screenshot of this MudBlazor version running on the local Docker Deskt
 ### Commenting the stuff in GitHub
 
 When making all this documentation, I sometimes peaked at this documentation of the [markdown stuff](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+
+## HTTPS/SSL Certificate Setup
+
+### Local Development with HTTPS
+
+To run the application locally with HTTPS support:
+
+1. **Generate the development certificate** (Windows):
+```powershell
+dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx" -p "MyPassword123" --trust
+```
+
+2. **Run with HTTPS support:**
+```powershell
+cd MyApplication
+dotnet run --launch-profile both
+```
+
+This will start the application on:
+- HTTP: `http://localhost:5078`
+- HTTPS: `https://localhost:7063`
+
+### Docker with HTTPS
+
+The Docker setup includes HTTPS support via self-signed certificate.
+
+1. **Generate the certificate locally** (see above)
+
+2. **Copy the certificate to the Docker directory:**
+```powershell
+Copy-Item "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx" "docker/https/aspnetapp.pfx" -Force
+```
+
+3. **Start Docker containers:**
+```powershell
+docker-compose -f docker-compose-local.yml up
+```
+
+This will make the application accessible on:
+- HTTP: `http://localhost:3080`
+- HTTPS: `https://localhost:3443`
+
+### Certificate Security Notes
+
+- **The PFX file is NOT committed to source control** (`docker/https/` is in `.gitignore`)
+- Each developer must generate their own certificate locally
+- The certificate is self-signed, so browsers will show a security warning (this is normal for development)
+- For production, use a proper SSL certificate from a trusted Certificate Authority
