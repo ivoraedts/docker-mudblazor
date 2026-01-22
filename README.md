@@ -515,6 +515,77 @@ Here is a screenshot of this MudBlazor version running on the local Docker Deskt
 
 ![MudBlazor with data running on Docker Desktop](/assets/images/MudBlazorWithData.png)
 
-### Commenting the stuff in GitHub
+## HTTPS/SSL Certificate Setup
+
+### The HTTPS step
+
+Until now it was working fine, but only over HTTP, not over HTTPS, despite having a HTTPS port defined in the configurations.
+This time, I worked with Visual Studio Code and the Claude Haiku 4.5 AI agent in the chat to get all this arranged.
+I needed a self-signed certificate in order to het it to work... and in order to get it to work in Docker, I manually need to copy that certificate file it.
+I asked AI to do most for me and even asked to add the next chapter in the documentation, which looks fine to me:
+
+### Local Development with HTTPS
+
+To run the application locally with HTTPS support:
+
+1. **Generate the development certificate** (Windows):
+```powershell
+dotnet dev-certs https -ep "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx" -p "MyPassword123" --trust
+```
+
+2. **Run with HTTPS support:**
+```powershell
+cd MyApplication
+dotnet run --launch-profile both
+```
+
+This will start the application on:
+- HTTP: `http://localhost:5078`
+- HTTPS: `https://localhost:7063`
+
+### Docker with HTTPS
+
+The Docker setup includes HTTPS support via self-signed certificate.
+
+1. **Generate the certificate locally** (see above)
+
+2. **Copy the certificate to the Docker directory:**
+```powershell
+Copy-Item "$env:USERPROFILE\.aspnet\https\aspnetapp.pfx" "docker/https/aspnetapp.pfx" -Force
+```
+
+3. **Start Docker containers:**
+```powershell
+docker-compose -f docker-compose-local.yml up
+```
+
+This will make the application accessible on:
+- HTTP: `http://localhost:3080`
+- HTTPS: `https://localhost:3443`
+
+#### Certificate Security Notes
+
+- **The PFX file is NOT committed to source control** (`docker/https/` is in `.gitignore`)
+- Each developer must generate their own certificate locally
+- The certificate is self-signed, so browsers will show a security warning (this is normal for development)
+- For production, use a proper SSL certificate from a trusted Certificate Authority
+
+### Synology Docker with HTTPS
+So on the Synology it was just a mapper of first copying the certificate to a local folder that can be accessed by the Docker Container
+![Arrange certificate with FileStation on Synology](/assets/images/Synology-ArrangeFolderAndCertificateInFileStation.png)
+
+And than adding the mapping to that local folder by extending the volumes of the docker-mudblazor service, so it looks like:
+```
+    volumes:
+      - ./docker/mudblazor:/app/data
+      - ./docker/https:/app/https:ro
+```
+So the `docker/https/` part is where that certificate was stored via the FileStation and the `/app/https/` is where the application expects the file as defined in the Dockerfile.
+
+And like you can see, the access of HTTPS to the application running on Synology works (just not trusted by the browser):
+
+![HTTPS access on Synology](/assets/images/Synology-HTTP-NotTrusted.png)
+
+## Commenting the stuff in GitHub
 
 When making all this documentation, I sometimes peaked at this documentation of the [markdown stuff](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
