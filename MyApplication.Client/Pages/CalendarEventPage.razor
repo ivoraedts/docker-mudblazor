@@ -1,0 +1,100 @@
+@page "/calendarevent"
+@page "/calendarevent/{ItemId:int}"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<h3>Calendar events</h3>
+
+<style>
+    .selected {
+        background-color: #1E88E5 !important;
+    }
+    .selected > td {
+        color: white !important;
+    }
+</style>
+
+<MudTable @ref="_table" T="CalendarEvent" Items="events" RowClassFunc="@SelectedRowClassFunc" OnRowClick="RowClickEvent"
+    Hover="true" Bordered="true" Striped="true" Class="mb-4">
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Title</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Action</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Action">            
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" @onclick="@((MouseEventArgs e) => EditMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" @onclick="@((MouseEventArgs e) => DeleteMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5, 10, 25 }" />
+    </PagerContent>
+</MudTable>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" Href="/addcalendarevent" EndIcon="@Icons.Material.Filled.Add" Size="Size.Large">Add Item</MudButton>
+
+@inject HttpClient Http
+@code {
+    private MudTable<CalendarEvent> _table = null!;
+    private List<CalendarEvent> events = new List<CalendarEvent>();
+    private CalendarEvent? selectedEvent;
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Snackbar.Add($"Loading events..", Severity.Info);
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) events = result;
+
+        // highlight the item if ItemId is provided
+        if (ItemId > 0)
+        {
+            selectedEvent = events.FirstOrDefault(e => e.Id == ItemId);
+            if (selectedEvent != null)
+            {
+                _table.SetSelectedItem(selectedEvent);
+                Snackbar.Add($"Selected event {ItemId}.", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Event with Id {ItemId} not found.", Severity.Warning);
+            }
+        }
+    }
+
+    private void EditMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
+    }
+
+    private async void DeleteMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
+    }
+
+    private void RowClickEvent(TableRowClickEventArgs<CalendarEvent> args)
+    {
+        //this is just needed to be able to highlight the selected row. Even though the implementation is empty.
+    }
+
+    private string SelectedRowClassFunc(CalendarEvent calendarEvent, int rowNumber)
+    {
+        if (_table.SelectedItem != null && _table.SelectedItem.Equals(calendarEvent))
+        {
+            return "selected";
+        }
+        else
+        {
+            return string.Empty;
+        }
+    }
+}

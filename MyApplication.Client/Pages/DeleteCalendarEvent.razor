@@ -1,0 +1,49 @@
+@page "/deletecalendarevent/{ItemId:int}"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+
+<h3>Delete Calendar Event</h3>
+
+<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" ReadOnly="true" />
+<MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" ReadOnly="true" />
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="DeleteItem">Delete Item</MudButton>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Undo">Undo</MudButton>
+
+<MudText Class="mb-4">Id of item: @ItemId</MudText>
+
+@inject HttpClient Http
+@code {
+    private string newTitle = string.Empty;
+    private string newDescription = string.Empty;
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
+        CalendarEvent? result = await Http.GetFromJsonAsync<CalendarEvent>(apiUrl);
+        if (result != null)
+        {
+            newTitle = result.Title;
+            newDescription = result.Description;
+        }
+    }
+
+    private async Task DeleteItem()
+    {
+        var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
+        var response = await Http.DeleteAsync(apiUrl);
+    
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"/calendarevent");
+        }
+    }
+
+    private void Undo()
+    {
+        NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+    }
+}
