@@ -1,0 +1,59 @@
+@page "/editcalendarevent/{ItemId:int}"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+
+
+<h3>Edit Calendar Event</h3>
+
+<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
+<MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="EditItem">Edit Item</MudButton>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Undo">Undo</MudButton>
+
+<MudText Class="mb-4">Id of item: @ItemId</MudText>
+
+@inject HttpClient Http
+@code {
+    private string newTitle = string.Empty;
+    private string newDescription = string.Empty;
+
+    [Parameter]
+    public int ItemId { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
+        CalendarEvent? result = await Http.GetFromJsonAsync<CalendarEvent>(apiUrl);
+        if (result != null)
+        {
+            newTitle = result.Title;
+            newDescription = result.Description;
+        }
+    }
+
+    private async Task EditItem()
+    {
+        var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
+
+        var newEvent = new CalendarEvent
+        {
+            Title = newTitle != null ? newTitle : "New Title",
+            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
+            Id = ItemId
+        };
+
+        var response = await Http.PutAsJsonAsync(apiUrl, newEvent);
+    
+        if (response.IsSuccessStatusCode)
+        {
+            NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+        }
+    }
+
+    private void Undo()
+    {
+        NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+    }
+}

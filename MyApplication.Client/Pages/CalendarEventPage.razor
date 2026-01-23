@@ -21,20 +21,23 @@
         <MudTh>Id</MudTh>
         <MudTh>Title</MudTh>
         <MudTh>Description</MudTh>
+        <MudTh>Action</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
         <MudTd DataLabel="Title">@context.Title</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="Action">            
+            <MudIconButton Icon="@Icons.Material.Filled.Edit" @onclick="@((MouseEventArgs e) => EditMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" @onclick="@((MouseEventArgs e) => DeleteMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
+        </MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 5, 10, 25 }" />
     </PagerContent>
 </MudTable>
 
-<h3>Add Item</h3>
-
-<MudButton Color="Color.Primary" Variant="Variant.Filled" Href="/addcalendarevent">Add Item</MudButton>
+<MudButton Color="Color.Primary" Variant="Variant.Filled" Href="/addcalendarevent" EndIcon="@Icons.Material.Filled.Add" Size="Size.Large">Add Item</MudButton>
 
 @inject HttpClient Http
 @code {
@@ -66,6 +69,16 @@
                 Snackbar.Add($"Event with Id {ItemId} not found.", Severity.Warning);
             }
         }
+    }
+
+    private void EditMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
+    }
+
+    private async void DeleteMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
     }
 
     private void RowClickEvent(TableRowClickEventArgs<CalendarEvent> args)
