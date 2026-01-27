@@ -32,8 +32,33 @@ public class CalendarEventController : ControllerBase
 
     // POST: api/Values
     [HttpPost]
-    public async Task<ActionResult<CalendarEvent>> PostCalendarEvent(CalendarEvent calendarEvent)
+    public async Task<ActionResult<CalendarEvent>> PostCalendarEvent([FromForm] string title, [FromForm] string titleColor, [FromForm] string description, [FromForm] DateTime timeStamp, [FromForm] IFormFile? file)
     {
+        var calendarEvent = new CalendarEvent
+        {
+            Title = title,
+            TitleColor = titleColor,
+            Description = description,
+            TimeStamp = timeStamp
+        };
+        
+        if (file != null)
+        {
+            // Handle file upload - save to wwwroot or storage service
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+            Directory.CreateDirectory(uploadsFolder);
+            
+            var uniqueFileName = $"{Guid.NewGuid()}_{file.FileName}";
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            
+            calendarEvent.FilePath = Path.Combine("uploads", uniqueFileName);
+        }
+        
         _context.CalendarEvents.Add(calendarEvent);
         await _context.SaveChangesAsync();
         return Ok(calendarEvent);
