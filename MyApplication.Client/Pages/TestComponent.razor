@@ -78,7 +78,8 @@
         var newEvent = new CalendarEvent
         {
             Title = newTitle != null ? newTitle : "New Title",
-            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}"
+            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
+            TimeStamp = DateTime.Now
         };
 
         var response = await Http.PostAsJsonAsync(apiUrl, newEvent);

@@ -8,8 +8,16 @@
 <MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
 
-<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Date:" Editable="true" @bind-Date="_date" DateFormat="dd-MM-yyyy" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker Label="Time:" Editable="true" @bind-Time="_time" />
+    </MudItem>        
+</MudGrid>
 
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
 <MudText Class="mb-4">Id of last item: @idOfLastItem</MudText>
 
 @inject HttpClient Http
@@ -17,6 +25,8 @@
     private int idOfLastItem = 0;
     private string newTitle = string.Empty;
     private string newDescription = string.Empty;
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
 
 
     protected override async Task OnInitializedAsync()
@@ -27,11 +37,15 @@
     private async Task AddItem()
     {
         var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var combinedDateTime = _date.HasValue && _time.HasValue 
+                ? _date.Value.Date + _time.Value 
+                : DateTime.Now;        
 
         var newEvent = new CalendarEvent
         {
             Title = newTitle != null ? newTitle : "New Title",
-            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}"
+            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
+            TimeStamp = DateTime.SpecifyKind(combinedDateTime, DateTimeKind.Utc)
         };
 
         var response = await Http.PostAsJsonAsync(apiUrl, newEvent);

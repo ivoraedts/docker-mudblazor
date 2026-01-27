@@ -15,7 +15,7 @@ public class CalendarEventController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CalendarEvent>>> CalendarEvents()
     {
-        return await _context.CalendarEvents.AsAsyncEnumerable().OrderBy(e => e.Id).ToListAsync();
+        return await _context.CalendarEvents.AsAsyncEnumerable().OrderBy(e => e.TimeStamp).ToListAsync();
     }
 
     // GET: api/Values/5

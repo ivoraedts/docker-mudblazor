@@ -8,6 +8,15 @@
 <MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
 
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Date:" Editable="true" @bind-Date="_date" DateFormat="dd-MM-yyyy" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker Label="Time:" Editable="true" @bind-Time="_time" />
+    </MudItem>        
+</MudGrid>
+
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="EditItem">Edit Item</MudButton>
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Undo">Undo</MudButton>
 
@@ -17,6 +26,8 @@
 @code {
     private string newTitle = string.Empty;
     private string newDescription = string.Empty;
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
 
     [Parameter]
     public int ItemId { get; set; }
@@ -30,6 +41,8 @@
         {
             newTitle = result.Title;
             newDescription = result.Description;
+            _date = result.TimeStamp.Date;
+            _time = result.TimeStamp.TimeOfDay;
         }
     }
 
@@ -41,6 +54,9 @@
         {
             Title = newTitle != null ? newTitle : "New Title",
             Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
+            TimeStamp = _date.HasValue && _time.HasValue 
+                ? _date.Value.Date + _time.Value 
+                : DateTime.Now,
             Id = ItemId
         };
 
