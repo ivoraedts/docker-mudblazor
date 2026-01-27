@@ -4,7 +4,7 @@
 
 <h3>Delete Calendar Event</h3>
 
-<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" ReadOnly="true" />
+<MudTextField @bind-value="newTitle" Label="Title" Style="@($"color: {_titleColor};")"  Variant="Variant.Outlined" ReadOnly="true" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" ReadOnly="true" />
 
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="DeleteItem">Delete Item</MudButton>
@@ -15,6 +15,7 @@
 @inject HttpClient Http
 @code {
     private string newTitle = string.Empty;
+    private string _titleColor = "#db1f1fff";
     private string newDescription = string.Empty;
 
     [Parameter]
@@ -27,7 +28,8 @@
         if (result != null)
         {
             newTitle = result.Title;
-            newDescription = result.Description;
+            _titleColor = result.TitleColor;
+            newDescription = result.Description;            
         }
     }
 

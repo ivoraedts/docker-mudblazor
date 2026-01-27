@@ -5,7 +5,8 @@
 
 <h3>Edit Calendar Event</h3>
 
-<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
+<MudTextField @bind-value="newTitle" Label="Title" Style="@($"color: {_titleColor};")" Variant="Variant.Outlined" />
+<MudColorPicker Label="Title Color" @bind-Text="_titleColor" Style="@($"color: {_titleColor};")" Placeholder="Select Color" ColorPickerView="ColorPickerView.GridCompact" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
 
 <MudGrid>
@@ -25,6 +26,7 @@
 @inject HttpClient Http
 @code {
     private string newTitle = string.Empty;
+    private string _titleColor = "#db1f1fff";
     private string newDescription = string.Empty;
     private DateTime? _date = DateTime.Today;
     private TimeSpan? _time = DateTime.Now.TimeOfDay;
@@ -40,6 +42,7 @@
         if (result != null)
         {
             newTitle = result.Title;
+            _titleColor = result.TitleColor;
             newDescription = result.Description;
             _date = result.TimeStamp.Date;
             _time = result.TimeStamp.TimeOfDay;
@@ -53,6 +56,7 @@
         var newEvent = new CalendarEvent
         {
             Title = newTitle != null ? newTitle : "New Title",
+            TitleColor = _titleColor,
             Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
             TimeStamp = _date.HasValue && _time.HasValue 
                 ? _date.Value.Date + _time.Value 

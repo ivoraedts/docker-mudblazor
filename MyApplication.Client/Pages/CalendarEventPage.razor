@@ -26,7 +26,7 @@
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Title" Style="@($"color: {context.TitleColor};")" >@context.Title</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
         <MudTd DataLabel="TimeStamp">
             <div>@context.TimeStamp.ToString("MM-dd-yyyy")</div>
