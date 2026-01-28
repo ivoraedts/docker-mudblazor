@@ -50,6 +50,38 @@ services:
       # <Host Port>:<Container Port>
       - "5432:5432"     
 
+  minio:
+    image: minio/minio:latest
+    container_name: docker-mudblazor.minio
+    networks:
+      - docker-mudblazor
+    volumes:
+      - ./docker/minio/data:/data
+    ports:
+      # MinIO API
+      - "9000:9000"
+      # MinIO Web Console
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: minio server /data --console-address ":9001"
+    
+  minio-init:
+    image: minio/mc:latest
+    container_name: docker-mudblazor.minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/calendar-events --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/calendar-events;
+      exit 0;
+      "
+    networks:
+      - docker-mudblazor
+
   pgadmin:
     image: dpage/pgadmin4:latest
     container_name: docker-mudblazor.pgadmin

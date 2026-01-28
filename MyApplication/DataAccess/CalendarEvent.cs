@@ -7,6 +7,6 @@ namespace MyApplication.Data
         public required string TitleColor {get; set;}
         public required string Description {get; set;}
         public required DateTime TimeStamp {get; set;}
-        public string? FilePath {get; set;}
+        public string? ImageFilePath {get; set;}
     }
 }

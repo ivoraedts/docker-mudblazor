@@ -7,5 +7,6 @@ namespace MyApplication.Client.Models
         public required string TitleColor {get; set;} = "#db1f1fff";
         public required string Description {get; set;} = string.Empty;
         public required DateTime TimeStamp {get; set;}
+        public string? ImageFilePath {get; set;}
     }
 }
