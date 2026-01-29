@@ -5,43 +5,99 @@
 
 <h3>Add Calendar Event</h3>
 
-<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
+<MudTextField @bind-value="newTitle" Label="Title" Style="@($"color: {_titleColor};")" Variant="Variant.Outlined" />
+<MudColorPicker Label="Title Color" @bind-Text="_titleColor" Style="@($"color: {_titleColor};")" Placeholder="Select Color" ColorPickerView="ColorPickerView.GridCompact" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
 
-<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Date:" Editable="true" @bind-Date="_date" DateFormat="dd-MM-yyyy" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker Label="Time:" Editable="true" @bind-Time="_time" />
+    </MudItem>        
+</MudGrid>
 
+<br/>
+
+<MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+    <ActivatorContent>
+        <MudFab Color="Color.Primary"
+                StartIcon="@Icons.Material.Filled.Image"
+                Label="Load picture" />
+    </ActivatorContent>
+</MudFileUpload>
+@if (_uploadFile != null)
+{
+    <MudText Class="mb-4">Uploaded file: @_uploadFile.Name (Size: @_uploadFile.Size bytes)</MudText>
+    <MudFab Color="Color.Secondary"
+        StartIcon="@Icons.Material.Filled.Delete"
+        Label="Clear picture"
+        OnClick="() => _uploadFile = null" />
+    <br/>
+}
+else
+{
+    <MudText Class="mb-4">No file uploaded yet.</MudText>
+}
+
+<br/>
+
+<MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="AddItem">Add Item</MudButton>
 <MudText Class="mb-4">Id of last item: @idOfLastItem</MudText>
 
 @inject HttpClient Http
 @code {
     private int idOfLastItem = 0;
     private string newTitle = string.Empty;
+    private string _titleColor = "#db1f1fff";
     private string newDescription = string.Empty;
-
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    private IBrowserFile? _uploadFile;
 
     protected override async Task OnInitializedAsync()
     {
         // Initialization logic if needed
     }
 
+    private void UploadFiles(IBrowserFile file)
+    {
+        _uploadFile = file;
+    }
+
     private async Task AddItem()
     {
         var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var combinedDateTime = _date.HasValue && _time.HasValue 
+                ? _date.Value.Date + _time.Value 
+                : DateTime.Now;        
 
-        var newEvent = new CalendarEvent
+        using (var content = new MultipartFormDataContent())
         {
-            Title = newTitle != null ? newTitle : "New Title",
-            Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}"
-        };
+            // Add form fields
+            content.Add(new StringContent(newTitle ?? "New Title"), "title");
+            content.Add(new StringContent(_titleColor), "titleColor");
+            content.Add(new StringContent(newDescription ?? $"Something interesting added at {DateTime.Now}"), "description");
+            content.Add(new StringContent(DateTime.SpecifyKind(combinedDateTime, DateTimeKind.Utc).ToString("o")), "timeStamp");
+            
+            // Add file if selected
+            if (_uploadFile != null)
+            {
+                var fileContent = new StreamContent(_uploadFile.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_uploadFile.ContentType);
+                content.Add(fileContent, "file", _uploadFile.Name);
+            }
 
-        var response = await Http.PostAsJsonAsync(apiUrl, newEvent);
-    
-        if (response.IsSuccessStatusCode)
-        {
-            var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
-            if (addedEvent != null) idOfLastItem = addedEvent.Id;
+            var response = await Http.PostAsync(apiUrl, content);
+        
+            if (response.IsSuccessStatusCode)
+            {
+                var addedEvent = await response.Content.ReadFromJsonAsync<CalendarEvent>();
+                if (addedEvent != null) idOfLastItem = addedEvent.Id;
+            }
+
+            NavigationManager.NavigateTo($"/calendarevent/{idOfLastItem}");
         }
-
-        NavigationManager.NavigateTo($"/calendarevent/{idOfLastItem}");
     }
 }

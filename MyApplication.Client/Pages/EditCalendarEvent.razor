@@ -5,18 +5,77 @@
 
 <h3>Edit Calendar Event</h3>
 
-<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" />
+<MudTextField @bind-value="newTitle" Label="Title" Style="@($"color: {_titleColor};")" Variant="Variant.Outlined" />
+<MudColorPicker Label="Title Color" @bind-Text="_titleColor" Style="@($"color: {_titleColor};")" Placeholder="Select Color" ColorPickerView="ColorPickerView.GridCompact" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" />
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Date:" Editable="true" @bind-Date="_date" DateFormat="dd-MM-yyyy" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker Label="Time:" Editable="true" @bind-Time="_time" />
+    </MudItem>        
+</MudGrid>
+
+<br/>
+
+@{
+    if (!string.IsNullOrEmpty(_imageUrl))
+    {
+        <MudImage Src="@_imageUrl" Alt="Event Image" Width="300" />
+        <MudFab Color="Color.Secondary"
+            StartIcon="@Icons.Material.Filled.Delete"
+            Label="Clear picture"
+            OnClick="ClearImage" />
+    }
+    else
+    {
+        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+            <ActivatorContent>
+                <MudFab Color="Color.Primary"
+                        StartIcon="@Icons.Material.Filled.Image"
+                        Label="Load picture" />
+            </ActivatorContent>
+        </MudFileUpload>
+        @if (_uploadFile != null)
+        {
+            <MudText Class="mb-4">Uploaded file: @_uploadFile.Name (Size: @_uploadFile.Size bytes)</MudText>
+            <MudFab Color="Color.Secondary"
+                StartIcon="@Icons.Material.Filled.Delete"
+                Label="Clear picture"
+                OnClick="() => _uploadFile = null" />
+            <br/>
+        }
+        else
+        {
+            <MudText Class="mb-4">No file uploaded yet.</MudText>
+        }
+    }
+}
+
+<br/>
 
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="EditItem">Edit Item</MudButton>
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Undo">Undo</MudButton>
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <MudText Class="mb-4" Color="Color.Error">@_errorMessage</MudText>
+}
 
 <MudText Class="mb-4">Id of item: @ItemId</MudText>
 
 @inject HttpClient Http
 @code {
     private string newTitle = string.Empty;
+    private string _titleColor = "#db1f1fff";
     private string newDescription = string.Empty;
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    private string _imageUrl = string.Empty;
+    private IBrowserFile? _uploadFile;
+    private string? _errorMessage;
 
     [Parameter]
     public int ItemId { get; set; }
@@ -29,27 +88,79 @@
         if (result != null)
         {
             newTitle = result.Title;
+            _titleColor = result.TitleColor;
             newDescription = result.Description;
+            _date = result.TimeStamp.Date;
+            _time = result.TimeStamp.TimeOfDay;
+            _imageUrl = result.ImageFilePath ?? string.Empty;
         }
+    }
+
+    private void ClearImage()
+    {
+        _imageUrl = string.Empty;
+    }
+
+    private void UploadFiles(IBrowserFile file)
+    {
+        _uploadFile = file;
     }
 
     private async Task EditItem()
     {
+        _errorMessage = null;
         var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
 
         var newEvent = new CalendarEvent
         {
             Title = newTitle != null ? newTitle : "New Title",
+            TitleColor = _titleColor,
             Description = newDescription != null ? newDescription : $"Something interesting added at {DateTime.Now}",
-            Id = ItemId
+            TimeStamp = _date.HasValue && _time.HasValue 
+                ? _date.Value.Date + _time.Value 
+                : DateTime.Now,
+            Id = ItemId,
+            ImageFilePath = _imageUrl
         };
 
-        var response = await Http.PutAsJsonAsync(apiUrl, newEvent);
-    
-        if (response.IsSuccessStatusCode)
+        try
         {
-            NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+            using (var content = new MultipartFormDataContent())
+            {
+                // Add form fields
+                content.Add(new StringContent(newEvent.Title), "title");
+                content.Add(new StringContent(newEvent.TitleColor), "titleColor");
+                content.Add(new StringContent(newEvent.Description), "description");
+                content.Add(new StringContent(DateTime.SpecifyKind(newEvent.TimeStamp, DateTimeKind.Utc).ToString("o")), "timeStamp");
+                content.Add(new StringContent(newEvent.Id.ToString()), "id");
+                content.Add(new StringContent(newEvent.ImageFilePath ?? string.Empty), "imageFilePath");
+
+                // Add file if selected
+                if (_uploadFile != null)
+                {
+                    var fileContent = new StreamContent(_uploadFile.OpenReadStream());
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_uploadFile.ContentType);
+                    content.Add(fileContent, "file", _uploadFile.Name);
+                }
+
+                var response = await Http.PutAsync(apiUrl, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+                    return;
+                }
+
+                var body = await response.Content.ReadAsStringAsync();
+                _errorMessage = $"Save failed: {(int)response.StatusCode} {response.ReasonPhrase}: {body}";
+            }
         }
+        catch (Exception ex)
+        {
+            _errorMessage = ex.Message;
+        }
+
+        StateHasChanged();
     }
 
     private void Undo()

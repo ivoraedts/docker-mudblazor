@@ -4,18 +4,47 @@
 
 <h3>Delete Calendar Event</h3>
 
-<MudTextField @bind-value="newTitle" Label="Title" Variant="Variant.Outlined" ReadOnly="true" />
+<MudTextField @bind-value="newTitle" Label="Title" Style="@($"color: {_titleColor};")"  Variant="Variant.Outlined" ReadOnly="true" />
 <MudTextField @bind-value="newDescription" Label="Description" Variant="Variant.Outlined" Lines="3" ReadOnly="true" />
 
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="DeleteItem">Delete Item</MudButton>
 <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Undo">Undo</MudButton>
+
+<MudGrid>
+    <MudItem xs="6">
+        <MudDatePicker Label="Date:" Editable="false" @bind-Date="_date" DateFormat="dd-MM-yyyy" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudTimePicker Label="Time:" Editable="false" @bind-Time="_time" />
+    </MudItem>        
+</MudGrid>
+
+<br/>
+
+@{
+    if (!string.IsNullOrEmpty(_imageUrl))
+    {
+        <MudImage Src="@_imageUrl" Alt="Event Image" Width="300" />
+    }
+    else
+    {
+        <MudText>No image available for this event.</MudText>
+    }
+}
+
+<br/>
 
 <MudText Class="mb-4">Id of item: @ItemId</MudText>
 
 @inject HttpClient Http
 @code {
     private string newTitle = string.Empty;
+    private string _titleColor = "#db1f1fff";
     private string newDescription = string.Empty;
+
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    private string _imageUrl = string.Empty;
 
     [Parameter]
     public int ItemId { get; set; }
@@ -27,7 +56,11 @@
         if (result != null)
         {
             newTitle = result.Title;
-            newDescription = result.Description;
+            _titleColor = result.TitleColor;
+            newDescription = result.Description;            
+            _date = result.TimeStamp.Date;
+            _time = result.TimeStamp.TimeOfDay;
+            _imageUrl = result.ImageFilePath ?? string.Empty;
         }
     }
 

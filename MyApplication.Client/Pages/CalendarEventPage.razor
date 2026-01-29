@@ -21,12 +21,17 @@
         <MudTh>Id</MudTh>
         <MudTh>Title</MudTh>
         <MudTh>Description</MudTh>
+        <MudTh>TimeStamp</MudTh>
         <MudTh>Action</MudTh>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Id">@context.Id</MudTd>
-        <MudTd DataLabel="Title">@context.Title</MudTd>
+        <MudTd DataLabel="Title" Style="@($"color: {context.TitleColor};")" >@context.Title</MudTd>
         <MudTd DataLabel="Description">@context.Description</MudTd>
+        <MudTd DataLabel="TimeStamp">
+            <div>@context.TimeStamp.ToString("MM-dd-yyyy")</div>
+            <div>@context.TimeStamp.ToString("HH:mm:ss")</div>
+        </MudTd>
         <MudTd DataLabel="Action">            
             <MudIconButton Icon="@Icons.Material.Filled.Edit" @onclick="@((MouseEventArgs e) => EditMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
             <MudIconButton Icon="@Icons.Material.Filled.Delete" @onclick="@((MouseEventArgs e) => DeleteMe(context))" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium" />
