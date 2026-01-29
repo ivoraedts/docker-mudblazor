@@ -4,26 +4,26 @@
 
 ### About Synology-Docker
 
-Around 2014 when I was working at Vanderlande in Veghel, I had many collegues that were busy with home automation.
-Some where showing live views of their home camara on their phones.
-So you could see some pet walking around or so (and let's be silent about their partners, haha)
-Most of them were at least having some kind of NAS (Network Attached Storage) in their home and most of them were really enthousiastic about Synology.
+Around 2014 when I was working at Vanderlande in Veghel, I had many colleagues that were busy with home automation.
+Some were showing live views of their home camara on their phones.
+So, you could see some pet walking around or so (and let's be silent about their partners, ha-ha)
+Most of them were at least having some kind of NAS (Network Attached Storage) in their home and most of them were really enthusiastic about Synology.
 At that time, I was hardly having time for solo-hobby projects at home, and besides storing data, I could not really find a use case for having such a NAS.
-I mostly store my data on external harddrives, so no real need for a NAS.
+I mostly store my data on external hard drives, so no real need for a NAS.
 
 But some years later, in May 2018, I could not stop myself, so I bought a Synology DS218+.
 I started to use it as a file share, so on our laptops, it was mounted as a shared drive.
 And I also started to use their VPN stuff, so I could make my mobile phone connect to the Synology VPN.
 However, the VPN stuff was not really working well, so I stopped doing this.
 After mainly using it for storing files, thunder struck at home one year later and it destroyed some things in my home, including the Synology.
-The harddrive, insite, some good-old (yet slow) Western Digital Red 3TB was still intact.
+The hard drive, inside, some good-old (yet slow) Western Digital Red 3TB was still intact.
 However, I did not take time to reorder one...
 Until at the last day of 2020, when I had some time left... I ordered the DS220+ (as the older DS218+ was less available and more expensive) together with a UPS (to protect the Synology from future thunder strikes).
 However, after ordering it, I didn't find the time to re-install all that until the end of 2025.
 
 Luckily after four years in a box, the hardware still works fine.
-Also the disk, which was 'stored' in the old broxen DS218+ was still fine.
-So after reinstalling DSM, started using the Synology as a NAS with file mounts from our local computers pointing to it...
+Also, the disk, which was 'stored' in the old broken DS218+ was still fine.
+So, after reinstalling DSM, started using the Synology as a NAS with file mounts from our local computers pointing to it...
 ...and even after trying Synology Photo's, which is quite funny
 ...it was time to try something new.
 
@@ -32,7 +32,7 @@ So after reinstalling DSM, started using the Synology as a NAS with file mounts 
 I saw a .NET Zuid presentation about Mud Blazor, while I never played with Blazor before, and I decided that I am going to try to get some Mud Blazor application to run via Docker on my Synology.
 The cool thing is, that this Synology only uses in between 4.41W (Idle) and 14.69W (Max) of power, so there is no real 'harm' in having this thing run all the time.
 Especially not when comparing it to my Desktop, that needed a 500W Power Supply as the 400W Power Supply could not handle the start-up of the graphical card.
-Just to get an idea about about which CPU all this is running...
+Just to get an idea about on which CPU all this is running...
 
 | Machine  | CPU | Speed | Number of Cores | CPU Mark | Comment |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -53,9 +53,9 @@ As there is no point in hiding my source, Visual Studio by [Microsoft](https://v
 But for some reason, I fell like experimenting with Visual Studio Code, which is free by definition and which I have only used for some web development in the past.
 
 So initially it was just a matter of following the [MudBlazor Tutorial](https://mudblazor.com/getting-started/installation) in order to get things to work locally in Windows.
-Off course that part is easy. So the next step is running all that in Docker, starting on my local PC with [Docker Desktop](https://docs.docker.com/desktop/).
+Off course that part is easy. So, the next step is running all that in Docker, starting on my local PC with [Docker Desktop](https://docs.docker.com/desktop/).
 As the example solution of that MudBlazor tutorial, holds two projects, its a bit tricky. It's main project, named MyApplication is the stuff that runs and makes use of the second project, MyApplication.Client.
-So both projects need to be build, which makes the compose file and the docker command a bit more tricky as all files need to be gathered.
+So, both projects need to be built, which makes the compose file and the docker command a bit more tricky as all files need to be gathered.
 For the compose file, the best docker images that I could currently select from the [Docker Hub](https://hub.docker.com/) were the dotnet asp.net 10 image (runtime) and the dotnet sdk 10 image for doing the build.
 I came to the following compose file, which I put in the main project (MyApplication) directory:
 ```
@@ -107,13 +107,13 @@ Next step is getting it to run on The Synology...
 ### About Docker-Mudblazor-Synology
 
 After playing around with the Synology, which runs on DSM 7.3.2 it was time to get Docker Stuff running on it.
-Via Package Center, You can find it, named as Container Manager, which is a bit like the Docker Desktop for Synology.
+Via Package Center, you can find it, named as Container Manager, which is a bit like the Docker Desktop for Synology.
 Via the GUI, you find public container images that are stored on the [Docker Hub](https://hub.docker.com/), which is actually the same 'shared library' on which we found the base images for creating our own docker image, via the Register tab.
 Just to validate that my Synology Docker stuff was working well, I experimented with installing Uptime Kuma (some easy monitoring tool) on it.
 I was helped by [this video](https://www.youtube.com/watch?v=X0qGNgmCIGw) that explains the working of Container Manager
 From the Registry Tab, you can select a public image, click download and then select a version (like latest) and download the image.
-Than when the image is downloaded, you can start it, give it a name and assign a port.
-So after seeing that running, it's time to get the Docker-MudBlazor stuff to run on the Synology.
+Then when the image is downloaded, you can start it, give it a name and assign a port.
+So, after seeing that running, it's time to get the Docker-MudBlazor stuff to run on the Synology.
 After installing the [Container Tools extension](https://marketplace.visualstudio.com/items?itemName=ms-azuretools.vscode-containers) to Visual Studio Code, you can find the created images in the Containers tab.
 And from there, you can push these images to the [Docker Hub](https://hub.docker.com/).
 
@@ -121,11 +121,11 @@ And from there, you can push these images to the [Docker Hub](https://hub.docker
 
 See this URL for [the list of my example images](https://hub.docker.com/repository/docker/ivoraedts/hello-docker-mudblazor/tags) by tag.
 
-So from the Registry Tab, select the image, click download and then select a version (like latest) and download the image. As latest was later overwritten, you can still get this first version by tag 0.1.
+So, from the Registry Tab, select the image, click download and then select a version (like latest) and download the image. As latest was later overwritten, you can still get this first version by tag 0.1.
 
 ![Select image to download](/assets/images/Synology-SelectImageToDownload.png)
 
-Than from the Image Tab, select it, click on Run (haha in Dutch that is Uitvoeren), give it a name and click on Next (which is Volgende in Dutch)..
+Then from the Image Tab, select it, click on Run (ha-ha in Dutch that is Uitvoeren), give it a name and click on Next (which is Volgende in Dutch)..
 
 ![Run image as new container in Synology](/assets/images/Synology-RunImageInAsNewContainer.png)
 
@@ -145,25 +145,25 @@ Next step is some more realistic project that includes some database reading and
 ## Getting some more realistic Docker-Mudblazor version to work
 ### Adding a Database some Database GUI to Synology-Docker
 So, as most projects contain databases, it's time to add a database to it and some tooling to see it.
-Alternatively I could have picked adding reverse proxy tooling, message queuing, S3 file storage, caching, etc.
+Alternatively, I could have picked adding reverse proxy tooling, message queuing, S3 file storage, caching, etc.
 A database was just the best example and the most practical one to do some nice playing around once installed.
 
 I decided to go for PostgreSQL as this is one of the popular open-source relational databases.
 Next to this, I decided to initially go for pgAdmin 4 as the GUI for doing the database administrations and validations.
 I wanted to start with local development. But with the next step in mind: running the stuff in Docker, I decided it is probably more effective if I directly run pgAdmin and PostgreSQL in Docker and then connect my local Docker-MudBlazor to those over some exposed port.
-So this means, I will have 3 running projects / images:
+So, this means, I will have 3 running projects / images:
 1. That MudBlazor Project
 2. PostgreSQL (starting with the latest version of the [official image](https://hub.docker.com/_/postgres) )
 3. PG Admin (starting with the latest version of the [most pulled image](https://hub.docker.com/r/dpage/pgadmin4) )
 
 It will be trivial to use Docker Compose to get these containers to start and communicate to each other.
-So it makes sense to define a Docker Network, so the containers can access each other via the servicename.
-Also for both of them, I defined a volume mapping, so the data is stored on disk.
-So when the containers and images are destroyed and replaced, the data will still be there.
+So it makes sense to define a Docker Network, so the containers can access each other via the service name.
+Also, for both of them, I defined a volume mapping, so the data is stored on disk.
+So, when the containers and images are destroyed and replaced, the data will still be there.
 I added some simple username plus password for both postrgres and pgadmin.
 As I have no postgres or so running on the localhost, I have exposed the default port (5432).
 For pgadmin (which runs on 80, I defined the host port as 5050).
-So just for getting the database and administration to run, it resulted in this docker-compose file, that I have named ``docker-compose-db.yml``:
+So, just for getting the database and administration to run, it resulted in this docker-compose file, that I have named ``docker-compose-db.yml``:
 
 ```
 networks:
@@ -317,14 +317,14 @@ and then add that migration:
 dotnet ef migrations add InitialDatbaseMigration
 ```
 
-Than if all went well, running the application should result in running the migrations.
+Then if all went well, running the application should result in running the migrations.
 Probably you should first arrange that the database exist (which you can do via pgadmin).
-And than the application will connect to that database and perform the migrations by creating the intitial table and the migrations table:
+And then the application will connect to that database and perform the migrations by creating the intitial table and the migrations table:
 
 ![Database as seen from PgAdmin](/assets/images/SeeingTheDatabaseFromPgAdmin.png)
 
 Note that before running this, I created the database with that blabla table. Running the migrations will not touch that existing table.
-Also note that you can repeat running the migration by stoppping the application, deleting the CalendarEvents table and the _EFMigrationsHistory table and than again starting the application.
+Also note that you can repeat running the migration by stoppping the application, deleting the CalendarEvents table and the _EFMigrationsHistory table and then again starting the application.
 
 This is usefull for the next step: accessing the database from the application when that application runs in Docker...
 
@@ -333,7 +333,7 @@ This is usefull for the next step: accessing the database from the application w
 While the previous version of the MudBlazor application was created in Docker via manually running Docker build, it's now time to get this to work via Docker Compose.
 Earlier we made a Docker Compose file for getting postgres and pgadmin to run. Now it's time to add the MudBlazor application to that, so all three of them end-up in one Docker Compose file.
 I named this version ``docker-compose-local.yml`` as this is the file that will locally build that docker image, which will run as the docker-mudblazor service.
-I also added some dependancy-logic in the compose file, so the docker-mudblazor will start after postgres is running. (otherwise it will crash out)
+I also added some dependency-logic in the compose file, so the docker-mudblazor will start after postgres is running. (otherwise it will crash out)
 So I kind of ended up with the following compose file:
 
 ```
@@ -398,14 +398,14 @@ Then via Power Shell you can run the application as follows:
 ```
 docker compose -f docker-compose-local.yml up
 ```
-As described before, the database connection can be tested by deleting the CalendarEvents table and the _EFMigrationsHistory table and than (re)again starting the application and than validating those tables are recreated.
-On the other hand... if the application itself does not connect, it will crash out anyway.
-So if it runs and you can access it via ``http://localhost:3080/`` it should be fine.
+As described before, the database connection can be tested by deleting the CalendarEvents table and the _EFMigrationsHistory table and then (re)again starting the application and then validating those tables are recreated.
+On the other hand, if the application itself does not connect, it will crash out anyway.
+So, if it runs and you can access it via ``http://localhost:3080/`` it should be fine.
 After seeing that this works from on the local PC via Docker Desktop, it's interesting to see if this will also work on the Synology...
 
 ### Accessing the Database from the MudBlazor application running in Container Manager on the Synology
 
-So the fist thing to do after those migrations were added to the code, is similar to how we earlier published the application image to the [Docker Hub](https://hub.docker.com/) via the Containers tab of Visual Studio Code.
+So, the first thing to do after those migrations were added to the code, is similar to how we earlier published the application image to the [Docker Hub](https://hub.docker.com/) via the Containers tab of Visual Studio Code.
 Note that we only need to push the docker-mudblazor image, as the postgres and pgadmin images are already present in the Docker Hub.
 We got the docker-mudblazor on the Synology on the Container Manager via its Register-tab and Image-tab.
 Now we will use the Project-tab to get this to work. And again I was helped a bit by [this video](https://www.youtube.com/watch?v=X0qGNgmCIGw) that explains the working of Container Manager.
@@ -418,7 +418,7 @@ So when I mount postgres on ``./docker/pgdata`` I can find the data on ``/volume
 This is nice, so if you run more projects, the volumes are not mixed in the same folders.
 
 While getting things to run, I had problems with running pgadmin running on the Synology. 😠
-For some reason, it lacked permissions to write on the given volume, while postgres did not have this problems.
+For some reason, it lacked permissions to write on the given volume, while postgres did not have these problems.
 I saw some work-around of giving ownership of the folder to the ContainerManager-group, but I didn't like that.
 Especially when that is not needed for postgres itself.
 So I came up with another work around: Ditch PgAdmin on the Synology and use adminer instead.
@@ -477,9 +477,9 @@ services:
 ```
 
 As I am not sure if I will use postgres from the outside, I decided to map the port to 1234. But maybe I could remove that mapping as well and prevent access from the outside.
-Than for Adminer, I just mapped the 8080 to 8080, so over that port I can access adminer.
-The Docker-Mudblazor app itself, will again be acccesible on 3080.
-Ah..and because of that, it makes sense that before starting the project, the previous container must be stopped. (otherwise that occupies port 3080)
+Then for Adminer, I just mapped the 8080 to 8080, so over that port I can access adminer.
+The Docker-Mudblazor app itself, will again be accessible on 3080.
+..and because of that, it makes sense that before starting the project, the previous container must be stopped. (otherwise, that occupies port 3080)
 When all is configured fine, starting up the project will result in the images being downloaded and the containers will be started and keep running.
 If something goes wrong (like what I had with pgadmin), the container will stop and still be there and it will have logging that hopefully shows what goes wrong.
 
@@ -493,18 +493,18 @@ And just like shown earlier, you should be able to access the docker-mudblazor a
 
 Now we can connect to a database, it's time to see that we can query and add some data via the mud-blazor application...
 
-## Quering and Adding some data from the Mud-Blazor Application
+## Querying and adding some data from the Mud-Blazor Application
 ### Arranging the Http calls and the data
 
 Now the Docker-Synology configuration stuff seems done and it's time to really do something with the data from the MudBlazor app.
-The example application rus in InteractiveAuto mode, in which in is initially working as a Blazor Server application which uses SignalR communication, while it downloads the WebAssembly on the background, after which the processing is offloaded to the client and communication to the server is only done when really needed.
-So next to the existing Home, Calendar and Weather tabs, I added a calendar component and suprizingly named it Get Data in the menu as I was busy with just that in mind. 😁
+The example application runs in InteractiveAuto mode, in which in is initially working as a Blazor Server application which uses SignalR communication, while it downloads the WebAssembly on the background, after which the processing is offloaded to the client and communication to the server is only done when really needed.
+So next to the existing Home, Calendar and Weather tabs, I added a calendar component and surprisingly named it Get Data in the menu as I was busy with just that in mind. 😁
 I added some stuff to that Calendar page, so I can try things step by step and with or without data.
 Initially I was getting the data in the pageload and refreshing it after modifications, but after some initial problems I decided not to load any data on the page load.
-Than I added 4 buttons: one for showing the local url, one for loading fake data, one for loading real data from the database and one for adding data to the database.
+Then I added 4 buttons: one for showing the local url, one for loading fake data, one for loading real data from the database and one for adding data to the database.
 This also give me the opportunity to play with the MudBlazor table, which was easier to use than expected.
 While initially failing to get it to run, the AI agent, mostly Claude Haiku 4.5, came with some good suggestions.
-I suggested I should also register a HttpClient in dependancy injection and it added it for my to the ``Program.cs`` of the ``MyAplication.Client`` project 😆.
+I suggested I should also register a HttpClient in dependency injection and it added it for my to the ``Program.cs`` of the ``MyAplication.Client`` project 😆.
 ```
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 ```
@@ -521,7 +521,7 @@ Here is a screenshot of this MudBlazor version running on the local Docker Deskt
 
 Until now it was working fine, but only over HTTP, not over HTTPS, despite having a HTTPS port defined in the configurations.
 This time, I worked with Visual Studio Code and the Claude Haiku 4.5 AI agent in the chat to get all this arranged.
-I needed a self-signed certificate in order to het it to work... and in order to get it to work in Docker, I manually need to copy that certificate file it.
+I needed a self-signed certificate in order to make it to work... and in order to get it to work in Docker, I manually need to copy that certificate file it.
 I asked AI to do most for me and even asked to add the next chapter in the documentation, which looks fine to me:
 
 ### Local Development with HTTPS
@@ -571,7 +571,7 @@ This will make the application accessible on:
 - For production, use a proper SSL certificate from a trusted Certificate Authority
 
 ### Synology Docker with HTTPS
-So on the Synology it was just a mapper of first copying the certificate to a local folder that can be accessed by the Docker Container
+So, on the Synology it was just a mapper of first copying the certificate to a local folder that can be accessed by the Docker Container
 ![Arrange certificate with FileStation on Synology](/assets/images/Synology-ArrangeFolderAndCertificateInFileStation.png)
 
 And than adding the mapping to that local folder by extending the volumes of the docker-mudblazor service, so it looks like:
@@ -580,11 +580,238 @@ And than adding the mapping to that local folder by extending the volumes of the
       - ./docker/mudblazor:/app/data
       - ./docker/https:/app/https:ro
 ```
-So the `docker/https/` part is where that certificate was stored via the FileStation and the `/app/https/` is where the application expects the file as defined in the Dockerfile.
+So, the `docker/https/` part is where that certificate was stored via the FileStation and the `/app/https/` is where the application expects the file as defined in the Dockerfile.
 
 And like you can see, the access of HTTPS to the application running on Synology works (just not trusted by the browser):
 
 ![HTTPS access on Synology](/assets/images/Synology-HTTP-NotTrusted.png)
+
+## Adding some cool MudBlazor components
+
+### MudDatePicker and MudTimePicker (and MudColorPicker)
+
+The first components to try were the [MudDatePicker](https://mudblazor.com/components/datepicker) and [MudTimePicker](https://mudblazor.com/components/timepicker) so I could combine those into one DateTime Timestamp that I added to the EventData structure/table. I remembered some difficult times in the past with DatePicking, but even without help from AI, this was quite easy. So, adding and storing this did not take too much effort. Because of that, it was time for another picker that was there, the [MudColorPicker](https://mudblazor.com/components/colorpicker). I decided to use that color for coloring the title and off course had to store this one as well.
+
+#### MudDatePicker
+
+![MudDatePicker](/assets/images/MudDatePicker.png)
+
+#### MudTimePicker
+
+![MudTimePicker](/assets/images/MudTimePicker.png)
+
+#### MudColorPicker
+
+![MudColorPicker](/assets/images/MudColorPicker.png)
+
+### Store image in MinIO and use MudImage
+
+Then it was time to play around with [MudImage](https://mudblazor.com/components/image)... But for this, I needed an image first. I was considering to store it as a blob in the database, but as this is not the best practice. AI (Claude Haiku 4.5) came to the suggestion to store it in the wwwroot, which I did not like, but after suggesting to come up with an idea for local S3 storage via Docker, it came up with exact the same thing that I recently used at Kinetiq: Minio. So, for this, similar to what I did with Postgres, it's easiest to just add it to the compose file and run it via Docker Desktop. I did notice one annoying thing on Minio, which is that they reduced the functionality of the GUI, making it impossible to manage buckets (like making a bucket public) over the GUI. See [this article](https://forum.cloudron.io/topic/13844/minio-removing-the-interface-for-community-edition) about Minio fucking up their GUI on purpose. Luckily AI came up with the suggestion to arrange this via an [init-script](https://hub.docker.com/r/minio/mc) as a service in the docker compose, so the calendar-events bucket is a public one, which is convenient for directly displaying images. Actually uploading, storing, removing the images, which used to take quite some time to get it right, was made quite easy thanks to the AI assistance. It's amazing to see how well the auto-completions are at this stage. What I did need to do is convert links to image as seen from the DockerMudblazor service to links to images as seen from the browser. So, I introduced some configuration to configure the S3 Service URL (how the service connects to minio) and the S3 public URL (how the end user on the browser connects to minio for seeing the images). So when running the app local, it connects both via `http://localhost:9000/`. When running in Docker Desktop, that ServiceURL changes to `http://minio:9000` (with minio being the service-name). And finally, when I run the stuff on the Synology, then also the ServiceURL is configured to `http://minio:9000` (over the Docker Network via the Service name), but the public URL changes to the IP Address of the Synology on port 9000, like `(http://192.168.2.16:9000/)`, but if you want to run it from outside your own wifi network, then using the Synology QuickConnect ID is needed here.
+
+#### MudImage
+
+![MudImage](/assets/images/MudImage.png)
+
+#### The resulting local docker-compose file:
+```
+networks:
+  docker-mudblazor:
+    external: false
+
+services:
+  docker-mudblazor:
+    build:
+      context: .
+      dockerfile: MyApplication/Dockerfile
+    depends_on:
+      postgres: 
+        condition: service_healthy
+        restart: true
+    networks:
+      - docker-mudblazor
+    volumes:
+     # - /volume1/docker/hello-docker-mudblazor/data:/app/data
+      - ./docker/mudblazor:/app/data
+      - ./docker/https:/app/https:ro
+    ports:
+      # <Host Port>:<Container Port>
+      - "3080:8080"
+      - "3443:8081"
+    environment:
+      # Connection string for the database (overrides appsettings.json)
+      ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
+      S3__ServiceURL: "http://minio:9000"
+      # Tell the app that HTTPS is on the external port 3443
+      ASPNETCORE_HTTPS_PORT: 3443
+      # Other configurable parameters can go here
+      ASPNETCORE_ENVIRONMENT: Production
+
+  postgres:
+    image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    container_name: docker-mudblazor.postgres
+    #command: postgres -c max_connections=100
+    volumes:  
+    # This fix applies to version 18 and later. before it could mount to /var/lib/postgresql/data
+    # This fix applies to version 18 and later: mount to /var/lib/postgresql/docker works, but does not persist
+      - ./docker/pgdata:/var/lib/postgresql
+    networks:
+      - docker-mudblazor
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+    ports:
+      # <Host Port>:<Container Port>
+      - "5432:5432"     
+
+  minio:
+    image: minio/minio:latest
+    container_name: docker-mudblazor.minio
+    networks:
+      - docker-mudblazor
+    volumes:
+      - ./docker/minio/data:/data
+    ports:
+      # MinIO API
+      - "9000:9000"
+      # MinIO Web Console
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: minio server /data --console-address ":9001"
+    
+  minio-init:
+    image: minio/mc:latest
+    container_name: docker-mudblazor.minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/calendar-events --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/calendar-events;
+      exit 0;
+      "
+    networks:
+      - docker-mudblazor
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: docker-mudblazor.pgadmin
+    volumes:
+      - ./docker/pgadmin:/var/lib/pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    networks:
+      - docker-mudblazor
+    ports:
+      # <Host Port>:<Container Port>
+      - "5050:80"
+```
+
+#### The resulting Synology project (aka docker-compose) file:
+```
+networks:
+  docker-mudblazor:
+    external: false
+
+services:
+  docker-mudblazor:
+    image: ivoraedts/hello-docker-mudblazor:latest
+    depends_on:
+      postgres: 
+        condition: service_healthy
+        restart: true
+    networks:
+      - docker-mudblazor
+    volumes:
+     # - /volume1/docker/hello-docker-mudblazor/data:/app/data
+      - ./docker/mudblazor:/app/data
+      - ./docker/https:/app/https:ro
+    ports:
+      # <Host Port>:<Container Port>
+      - "3080:8080"
+      - "3081:8081"
+    environment:
+      # Connection string for the database (overrides appsettings.json)
+      ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
+      S3__ServiceURL: "http://minio:9000"
+      # Instead of the Synology local IP adress, you can better use the QuickConnect ID or a DDNS hostname
+      S3__PublicURL: "http://192.168.2.16:9000/"
+      # Other configurable parameters can go here
+      ASPNETCORE_ENVIRONMENT: Production
+
+  postgres:
+    image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    container_name: docker-mudblazor.postgres
+    #command: postgres -c max_connections=100
+    volumes:  
+    # This fix applies to version 18 and later. before it could mount to /var/lib/postgresql/data
+    # This fix applies to version 18 and later: mount to /var/lib/postgresql/docker works, but does not persist
+      - ./docker/pgdata:/var/lib/postgresql
+    networks:
+      - docker-mudblazor
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+    ports:
+      # <Host Port>:<Container Port>
+      - "1234:5432"   
+
+  minio:
+    image: minio/minio:latest
+    container_name: docker-mudblazor.minio
+    networks:
+      - docker-mudblazor
+    volumes:
+      - ./docker/minio/data:/data
+    ports:
+      # MinIO API
+      - "9000:9000"
+      # MinIO Web Console
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: minio server /data --console-address ":9001"
+    
+  minio-init:
+    image: minio/mc:latest
+    container_name: docker-mudblazor.minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/calendar-events --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/calendar-events;
+      exit 0;
+      "
+    networks:
+      - docker-mudblazor
+
+  adminer:
+    image: adminer:latest
+    container_name: docker-mudblazor.adminer    
+    networks:
+      - docker-mudblazor
+    ports:
+      # <Host Port>:<Container Port>
+      - "8080:8080"
+```
 
 ## Commenting the stuff in GitHub
 
