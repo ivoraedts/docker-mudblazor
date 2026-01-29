@@ -19,5 +19,6 @@ services:
     environment:
       # Connection string for the database (overrides appsettings.json)
       ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
+      S3__ServiceURL: "http://minio:9000"
       # Other configurable parameters can go here
       ASPNETCORE_ENVIRONMENT: Production
