@@ -6,7 +6,7 @@
 <PageTitle>Carousel</PageTitle>
 
 <MudText Typo="Typo.h3" GutterBottom="true">Carousel</MudText>
-
+<MudText Typo="Typo.body1" GutterBottom="true">Show events around the selected date and time:</MudText>
 <div style="max-width:500px">
     <MudGrid>
         <MudItem xs="6">
@@ -17,36 +17,85 @@
         </MudItem>        
     </MudGrid>
 </div>
-
-<h1>Next 5 Events</h1>
-
+<br/>
+    <MudGrid>
+        @{ if (nextEvents.Count == 0)
+           {
+        <MudItem xs="6">
+            <MudAlert Severity="Severity.Info">No upcoming events found for the selected date and time.</MudAlert>
+        </MudItem>
+           }
+           else
+           {
+        <MudItem xs="6">
+            <h1>Next 5 Events</h1>
+            <MudCarousel 
+                Class="mud-width-full" 
+                @ref="_carouselNextEvents"
+                ItemsSource="@nextEvents" 
+                Style="height:200px;" 
+                ShowArrows="true" 
+                ShowBullets="true" 
+                EnableSwipeGesture="true" 
+                AutoCycle="false">
+                <ItemTemplate>
+                    <div class="d-flex flex-column flex-column justify-center" style="height:100%">
+                        <MudText Align="@Align.Center" Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
+                        <MudText Align="@Align.Center" Typo="Typo.body1">@context.Description</MudText>
+                        <MudText Align="@Align.Center" Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
+                        @{
+                        if (string.IsNullOrEmpty(context.ImageFilePath) == false)
+                            {
+                                <div class="d-flex justify-center">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
+                                </div>
+                            }
+                            else
+                            {
+                                <MudText Align="@Align.Center" Typo="Typo.caption">No image available</MudText>
+                            }
+                        }
+                    </div>
+                </ItemTemplate>
+            </MudCarousel>
+        </MudItem>                
+           }
+        }
+        <MudItem xs="6">
+        </MudItem>        
+    </MudGrid>
 
 @inject HttpClient Http
 @code {
     private List<CalendarEvent> events = new List<CalendarEvent>();
-    private CalendarEvent? selectedEvent;
     private DateTime? _date = DateTime.Today;
     private TimeSpan? _time = DateTime.Now.TimeOfDay;
     private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
     private List<CalendarEvent> nextEvents = new List<CalendarEvent>();
+    private MudCarousel<CalendarEvent> _carouselNextEvents = null!;
     private List<CalendarEvent> previousEvents = new List<CalendarEvent>();
+        private List<CalendarEvent> tmpNextEvents = new List<CalendarEvent>(){
+            new CalendarEvent
+                { 
+                    Id=1, Title="Event 1", Description="Description 1", 
+                    TimeStamp=DateTime.Now.AddHours(1), TitleColor="#FF0000" 
+                },
+                new CalendarEvent
+                { 
+                    Id=2, Title="Event 2", Description="Description 2", 
+                    TimeStamp=DateTime.Now.AddHours(2), TitleColor="#00FF00" 
+                },
+            };
 
 
     protected override async Task OnInitializedAsync()
     {
-        Snackbar.Add($"Loading events..", Severity.Info);
         var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
         var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
         if (result != null) 
         {
             events = result;
-            nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
-            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
-
-            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
-            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
-            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
-            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
+            FillCarouselsWithEvents();
         }
     }
 
@@ -56,7 +105,7 @@
         {
             _date = date;
         }
-        TimeStampChanged();
+        FillCarouselsWithEvents();
     }
 
     private void TimeChanged(TimeSpan? time)
@@ -65,38 +114,24 @@
         {
             _time = time;
         }
-        TimeStampChanged();
+        FillCarouselsWithEvents();
     }
 
-    private void TimeStampChanged()
+    private void FillCarouselsWithEvents()
     {
         if (_date.HasValue && _time.HasValue)
         {
-            Snackbar.Add($"Selected date and time: {combinedDateTime}", Severity.Info);
-
             nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
+
+            if (nextEvents.Count > 0 && _carouselNextEvents != null)
+            {
+                _carouselNextEvents.MoveTo(0);
+            }
+
             previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
 
-            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
-            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
-            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
-            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
+            Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
         }
-    }
-
-    private void TimeClicked(MouseEventArgs args)
-    {
-        Snackbar.Add($"Time picker clicked", Severity.Info);
-
-                    Snackbar.Add($"Selected date and time: {combinedDateTime}", Severity.Info);
-
-            nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
-            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
-
-            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
-            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
-            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
-            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
     }
 
     private void EditMe(CalendarEvent item)
