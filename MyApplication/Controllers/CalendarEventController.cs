@@ -38,7 +38,7 @@ public class CalendarEventController : ControllerBase
     public async Task<ActionResult<IEnumerable<CalendarEvent>>> CalendarEvents()
     {
         return await _context.CalendarEvents.AsAsyncEnumerable()
-        .OrderBy(e => e.TimeStamp)
+        .OrderBy(e => e.TimeStamp).ThenBy(e => e.Id)
         .Select(e => e.ReplaceS3PrefixWithPublicURL(s3Configuration.PublicURL))
         .ToListAsync();
     }

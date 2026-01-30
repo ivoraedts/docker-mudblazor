@@ -1,0 +1,111 @@
+@page "/carousel"
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Carousel</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">Carousel</MudText>
+
+<div style="max-width:500px">
+    <MudGrid>
+        <MudItem xs="6">
+            <MudDatePicker Label="Date:" Date="@_date" Editable="true" DateFormat="dd-MM-yyyy" DateChanged="DateChanged" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTimePicker Label="Time:" Time="@_time" Editable="true" TimeChanged="TimeChanged" />
+        </MudItem>        
+    </MudGrid>
+</div>
+
+<h1>Next 5 Events</h1>
+
+
+@inject HttpClient Http
+@code {
+    private List<CalendarEvent> events = new List<CalendarEvent>();
+    private CalendarEvent? selectedEvent;
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
+    private List<CalendarEvent> nextEvents = new List<CalendarEvent>();
+    private List<CalendarEvent> previousEvents = new List<CalendarEvent>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Snackbar.Add($"Loading events..", Severity.Info);
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) 
+        {
+            events = result;
+            nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
+            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
+
+            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
+            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
+            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
+            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
+        }
+    }
+
+    private void DateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            _date = date;
+        }
+        TimeStampChanged();
+    }
+
+    private void TimeChanged(TimeSpan? time)
+    {
+        if (time.HasValue)
+        {
+            _time = time;
+        }
+        TimeStampChanged();
+    }
+
+    private void TimeStampChanged()
+    {
+        if (_date.HasValue && _time.HasValue)
+        {
+            Snackbar.Add($"Selected date and time: {combinedDateTime}", Severity.Info);
+
+            nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
+            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
+
+            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
+            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
+            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
+            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
+        }
+    }
+
+    private void TimeClicked(MouseEventArgs args)
+    {
+        Snackbar.Add($"Time picker clicked", Severity.Info);
+
+                    Snackbar.Add($"Selected date and time: {combinedDateTime}", Severity.Info);
+
+            nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
+            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
+
+            Snackbar.Add($"Loaded {events.Count} events", Severity.Info);
+            Snackbar.Add($"Next events from {combinedDateTime}", Severity.Info);
+            Snackbar.Add($"Next events count: {nextEvents.Count}", Severity.Info);
+            Snackbar.Add($"Previous events count: {previousEvents.Count}", Severity.Info);
+    }
+
+    private void EditMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
+    }
+
+    private async void DeleteMe(CalendarEvent item)
+    {
+        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
+    }
+}
