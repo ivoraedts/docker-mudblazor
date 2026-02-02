@@ -1,4 +1,5 @@
 @page "/carousel"
+@using MyApplication.Client.Components
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
@@ -28,44 +29,12 @@
            else
            {
         <MudItem xs="6">
-            <h1>Next @nextEvents.Count Events</h1>
-            <MudCarousel 
-                Class="mud-width-full" 
-                @ref="_carouselNextEvents"
-                ItemsSource="@nextEvents" 
-                Style="height:450px;" 
-                ShowArrows="true" 
-                ShowBullets="true" 
-                EnableSwipeGesture="true" 
-                AutoCycle="false">
-                <ItemTemplate>
-                    <MudPaper Elevation="3" Outlined="true">
-                        <MudStack Spacing="5">
-                            <MudText Align="@Align.Center" Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
-                            <MudText Align="@Align.Center" Typo="Typo.body1">@context.Description</MudText>                            
-                            @{
-                            if (string.IsNullOrEmpty(context.ImageFilePath) == false)
-                                {
-                                    <div class="d-flex justify-center">
-                                        <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="d-flex justify-center" style="height: 200px;">                                        
-                                        <MudText Align="@Align.Center" Typo="Typo.caption">No image available</MudText>
-                                    </div>
-                                }
-                            }
-                            <MudText Align="@Align.Center" Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
-                        </MudStack>
-                    </MudPaper>
-                </ItemTemplate>
-            </MudCarousel>
+            <FocussedEventsCarousel Events="nextEvents" EventsDescription="Next Events"/>
         </MudItem>                
            }
         }
         <MudItem xs="6">
+            <FocussedEventsCarousel Events="previousEvents" EventsDescription="Previous Events" />
         </MudItem>        
     </MudGrid>
 
@@ -76,20 +45,7 @@
     private TimeSpan? _time = DateTime.Now.TimeOfDay;
     private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
     private List<CalendarEvent> nextEvents = new List<CalendarEvent>();
-    private MudCarousel<CalendarEvent> _carouselNextEvents = null!;
     private List<CalendarEvent> previousEvents = new List<CalendarEvent>();
-        private List<CalendarEvent> tmpNextEvents = new List<CalendarEvent>(){
-            new CalendarEvent
-                { 
-                    Id=1, Title="Event 1", Description="Description 1", 
-                    TimeStamp=DateTime.Now.AddHours(1), TitleColor="#FF0000" 
-                },
-                new CalendarEvent
-                { 
-                    Id=2, Title="Event 2", Description="Description 2", 
-                    TimeStamp=DateTime.Now.AddHours(2), TitleColor="#00FF00" 
-                },
-            };
 
 
     protected override async Task OnInitializedAsync()
@@ -127,24 +83,9 @@
         {
             nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
 
-            if (nextEvents.Count > 0 && _carouselNextEvents != null)
-            {
-                _carouselNextEvents.MoveTo(0);
-            }
-
-            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Take(5).ToList();
+            previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Reverse().Take(5).ToList();
 
             Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
         }
-    }
-
-    private void EditMe(CalendarEvent item)
-    {
-        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
-    }
-
-    private async void DeleteMe(CalendarEvent item)
-    {
-        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
     }
 }
