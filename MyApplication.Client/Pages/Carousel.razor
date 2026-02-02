@@ -20,19 +20,9 @@
 </div>
 <br/>
     <MudGrid>
-        @{ if (nextEvents.Count == 0)
-           {
-        <MudItem xs="6">
-            <MudAlert Severity="Severity.Info">No upcoming events found for the selected date and time.</MudAlert>
-        </MudItem>
-           }
-           else
-           {
         <MudItem xs="6">
             <FocussedEventsCarousel Events="nextEvents" EventsDescription="Next Events"/>
         </MudItem>                
-           }
-        }
         <MudItem xs="6">
             <FocussedEventsCarousel Events="previousEvents" EventsDescription="Previous Events" />
         </MudItem>        

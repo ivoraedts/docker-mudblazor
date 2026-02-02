@@ -1,59 +1,46 @@
 ﻿@using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
 
-<MudGrid>
-    @{ if (Events.Count == 0)
-        {
-            <MudItem xs="6">
-                <MudAlert Severity="Severity.Info">No upcoming events found for the selected date and time.</MudAlert>
-            </MudItem>
-        }
-        else
-        {
-            <MudItem xs="6">
-            <h1>@Events.Count @EventsDescription</h1>
-                <MudCarousel                 
-                Class="mud-width-full" 
-                @ref="_carouselEvents"
-                ItemsSource="@Events" 
-                Style="height:500px;" 
-                ShowArrows="true" 
-                ShowBullets="true" 
-                EnableSwipeGesture="true" 
-                AutoCycle="false">
-                <ItemTemplate>
-                    <MudPaper Elevation="3" Outlined="true">
-                        <MudStack AlignItems="AlignItems.Center" Spacing="5">
-                            <MudText Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
-                            <MudText Typo="Typo.body1">@context.Description</MudText>                            
-                            @{
-                            if (string.IsNullOrEmpty(context.ImageFilePath) == false)
-                                {
-                                    <div class="d-flex justify-center">
-                                        <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="d-flex justify-center" style="height: 200px;">                                        
-                                        <MudText Typo="Typo.caption">No image available</MudText>
-                                    </div>
-                                }
-                            }
-                            <MudText Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
-                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
-                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => EditMe(context)">Edit</MudIconButton>
-                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteMe(context)">Delete</MudIconButton>
-                            </MudButtonGroup>
-                            <MudSpacer/>
-                        </MudStack>
-                    </MudPaper>
-                </ItemTemplate>
-            </MudCarousel>
-            </MudItem>
-        }
+@{ if (Events.Count == 0)
+    {
+        <MudAlert Severity="Severity.Info">No related events found for the selected date and time.</MudAlert>
     }
-</MudGrid>
+    else
+    {
+        <MudText Typo="Typo.h4" GutterBottom="true">Showing @Events.Count @EventsDescription</MudText>
+        <MudCarousel Class="mud-width-full" @ref="_carouselEvents" ItemsSource="@Events" 
+            Style="height:500px;" ShowArrows="true" ShowBullets="true" EnableSwipeGesture="true" AutoCycle="false">
+            <ItemTemplate>
+                <MudPaper Elevation="3" Outlined="true">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="5">
+                        <MudText Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
+                        <MudText Typo="Typo.body1">@context.Description</MudText>                            
+                        @{
+                        if (string.IsNullOrEmpty(context.ImageFilePath) == false)
+                            {
+                                <div class="d-flex justify-center">
+                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex justify-center" style="height: 200px;">                                        
+                                    <MudText Typo="Typo.caption">No image available</MudText>
+                                </div>
+                            }
+                        }
+                        <MudText Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
+                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => EditMe(context)">Edit</MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteMe(context)">Delete</MudIconButton>
+                        </MudButtonGroup>
+                        <MudSpacer/>
+                    </MudStack>
+                </MudPaper>
+            </ItemTemplate>
+        </MudCarousel>
+    }
+}
 
 @code {
 
