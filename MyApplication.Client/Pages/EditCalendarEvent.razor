@@ -31,7 +31,7 @@
     }
     else
     {
-        <MudFileUpload T="IBrowserFile" FilesChanged="UploadFiles">
+        <MudFileUpload T="IBrowserFile" Accept=".png, .jpg" FilesChanged="UploadFiles">
             <ActivatorContent>
                 <MudFab Color="Color.Primary"
                         StartIcon="@Icons.Material.Filled.Image"
@@ -40,7 +40,7 @@
         </MudFileUpload>
         @if (_uploadFile != null)
         {
-            <MudText Class="mb-4">Uploaded file: @_uploadFile.Name (Size: @_uploadFile.Size bytes)</MudText>
+            <MudText Class="mb-4">Uploaded file: @_uploadFile.Name (Size before resizing: @_uploadFile.Size bytes)</MudText>
             <MudFab Color="Color.Secondary"
                 StartIcon="@Icons.Material.Filled.Delete"
                 Label="Clear picture"
@@ -138,9 +138,10 @@
                 // Add file if selected
                 if (_uploadFile != null)
                 {
-                    var fileContent = new StreamContent(_uploadFile.OpenReadStream());
-                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(_uploadFile.ContentType);
-                    content.Add(fileContent, "file", _uploadFile.Name);
+                var resizedFile = await _uploadFile.RequestImageFileAsync(_uploadFile.ContentType, 800, 600);
+                var fileContent = new StreamContent(resizedFile.OpenReadStream());
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(resizedFile.ContentType);
+                content.Add(fileContent, "file", resizedFile.Name);
                 }
 
                 var response = await Http.PutAsync(apiUrl, content);
