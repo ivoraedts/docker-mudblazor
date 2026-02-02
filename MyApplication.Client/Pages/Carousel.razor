@@ -28,34 +28,38 @@
            else
            {
         <MudItem xs="6">
-            <h1>Next 5 Events</h1>
+            <h1>Next @nextEvents.Count Events</h1>
             <MudCarousel 
                 Class="mud-width-full" 
                 @ref="_carouselNextEvents"
                 ItemsSource="@nextEvents" 
-                Style="height:200px;" 
+                Style="height:450px;" 
                 ShowArrows="true" 
                 ShowBullets="true" 
                 EnableSwipeGesture="true" 
                 AutoCycle="false">
                 <ItemTemplate>
-                    <div class="d-flex flex-column flex-column justify-center" style="height:100%">
-                        <MudText Align="@Align.Center" Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
-                        <MudText Align="@Align.Center" Typo="Typo.body1">@context.Description</MudText>
-                        <MudText Align="@Align.Center" Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
-                        @{
-                        if (string.IsNullOrEmpty(context.ImageFilePath) == false)
-                            {
-                                <div class="d-flex justify-center">
-                                    <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
-                                </div>
+                    <MudPaper Elevation="3" Outlined="true">
+                        <MudStack Spacing="5">
+                            <MudText Align="@Align.Center" Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
+                            <MudText Align="@Align.Center" Typo="Typo.body1">@context.Description</MudText>                            
+                            @{
+                            if (string.IsNullOrEmpty(context.ImageFilePath) == false)
+                                {
+                                    <div class="d-flex justify-center">
+                                        <MudImage ObjectFit="ObjectFit.Cover" Src="@context.ImageFilePath" Alt="Event Image" Width="400" Height="200" Elevation="25" Class="rounded-xl"/>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="d-flex justify-center" style="height: 200px;">                                        
+                                        <MudText Align="@Align.Center" Typo="Typo.caption">No image available</MudText>
+                                    </div>
+                                }
                             }
-                            else
-                            {
-                                <MudText Align="@Align.Center" Typo="Typo.caption">No image available</MudText>
-                            }
-                        }
-                    </div>
+                            <MudText Align="@Align.Center" Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
+                        </MudStack>
+                    </MudPaper>
                 </ItemTemplate>
             </MudCarousel>
         </MudItem>                
