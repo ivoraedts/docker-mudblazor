@@ -2,7 +2,6 @@
 @using MyApplication.Client.Components
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
-@inject ISnackbar Snackbar
 
 <PageTitle>Single Carousel</PageTitle>
 
@@ -64,16 +63,33 @@
 
     private async Task FillCarouselsWithEvents()
     {
+        bool selectFirstNextItem = false;
         if (_date.HasValue && _time.HasValue)
         {
             var previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Reverse().Take(5).Reverse().ToList();
             var nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
             
+            if (previousEvents.Count>0 && nextEvents.Count >0)
+            {
+                var lastPrevious = previousEvents.Last();
+                var firstNext = nextEvents.First();
+                
+                var diffPrev = combinedDateTime - lastPrevious.TimeStamp;
+                var diffNext = firstNext.TimeStamp - combinedDateTime;
+
+                if(diffNext<diffPrev)
+                {
+                    selectFirstNextItem = true;
+                }
+            }
+
+
             nearEvents = previousEvents.Concat(nextEvents).ToList();
-            showItemNumber = previousEvents.Count > 0 ? previousEvents.Count - 1 : 0;
-            
-            Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
-            Snackbar.Add($"Showing item {showItemNumber} of {nearEvents.Count}", Severity.Info);
+            showItemNumber = previousEvents.Count > 0 ? 
+                selectFirstNextItem ? 
+                    previousEvents.Count 
+                    : previousEvents.Count - 1 
+                : 0;
         }
     }
 }
