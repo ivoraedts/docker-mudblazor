@@ -11,11 +11,15 @@
         <MudCarousel Class="mud-width-full" @ref="_carouselEvents" ItemsSource="@Events" 
             Style="height:500px;" ShowArrows="true" ShowBullets="true" EnableSwipeGesture="true" AutoCycle="false">
             <ItemTemplate>
-                <MudPaper Elevation="3" Outlined="true">
-                    <MudStack AlignItems="AlignItems.Center" Spacing="5">
-                        <MudText Style="@($"color: {context.TitleColor};")" Typo="Typo.h3">@context.Title</MudText>
-                        <MudText Typo="Typo.body1">@context.Description</MudText>                            
-                        @{
+                <MudGrid Spacing="3">
+                    <MudItem Style="overflow:hidden; height:70px;" xs="12">
+                        <MudText Align="Align.Center" Style="@($"color: {context.TitleColor};overflow:hidden")" Typo="Typo.h3">@context.Title</MudText>    
+                    </MudItem>
+                    <MudItem Style="overflow:hidden; height:70px;" xs="12">
+                        <MudText Align="Align.Center" Typo="Typo.body1">@context.Description</MudText>
+                    </MudItem>
+                    <MudItem Style="overflow:hidden; height:230px;" xs="12">
+                         @{
                         if (string.IsNullOrEmpty(context.ImageFilePath) == false)
                             {
                                 <div class="d-flex justify-center">
@@ -24,19 +28,26 @@
                             }
                             else
                             {
-                                <div class="d-flex justify-center" style="height: 200px;">                                        
+                                <div class="d-flex justify-center">                                        
                                     <MudText Typo="Typo.caption">No image available</MudText>
                                 </div>
                             }
                         }
-                        <MudText Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
-                        <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
-                            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => EditMe(context)">Edit</MudIconButton>
-                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteMe(context)">Delete</MudIconButton>
-                        </MudButtonGroup>
-                        <MudSpacer/>
-                    </MudStack>
-                </MudPaper>
+                    </MudItem>
+                    <MudItem Style="overflow:hidden; height:35px;" xs="12">
+                        <div class="d-flex justify-center">
+                            <MudText Align="Align.Center" Typo="Typo.caption">@context.TimeStamp.ToString("MM-dd-yyyy HH:mm:ss")</MudText>
+                        </div>
+                    </MudItem>
+                    <MudItem Style="overflow:hidden; height:60px;" xs="12">
+                        <div class="d-flex justify-center">
+                            <MudButtonGroup Color="Color.Primary" Variant="Variant.Filled">
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="() => EditMe(context)">Edit</MudIconButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="() => DeleteMe(context)">Delete</MudIconButton>
+                            </MudButtonGroup>
+                        </div>
+                    </MudItem>
+                </MudGrid>
             </ItemTemplate>
         </MudCarousel>
     }
