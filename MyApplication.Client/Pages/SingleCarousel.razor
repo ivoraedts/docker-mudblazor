@@ -20,7 +20,7 @@
 <br/>
     <MudGrid>
         <MudItem xs="12">
-            <FocussedEventsCarousel Events="nearEvents" EventsDescription="Near Events"/>
+            <FocussedEventsCarousel Events="nearEvents" ShowItemNumber="showItemNumber" EventsDescription="Near Events"/>
         </MudItem>                
     </MudGrid>
 
@@ -31,6 +31,7 @@
     private TimeSpan? _time = DateTime.Now.TimeOfDay;
     private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
     private List<CalendarEvent> nearEvents = new List<CalendarEvent>();
+    private int showItemNumber = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,7 +62,7 @@
         FillCarouselsWithEvents();
     }
 
-    private void FillCarouselsWithEvents()
+    private async Task FillCarouselsWithEvents()
     {
         if (_date.HasValue && _time.HasValue)
         {
@@ -69,7 +70,10 @@
             var nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
             
             nearEvents = previousEvents.Concat(nextEvents).ToList();
+            showItemNumber = previousEvents.Count > 0 ? previousEvents.Count - 1 : 0;
+            
             Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
+            Snackbar.Add($"Showing item {showItemNumber} of {nearEvents.Count}", Severity.Info);
         }
     }
 }

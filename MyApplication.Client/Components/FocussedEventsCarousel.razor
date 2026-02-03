@@ -1,5 +1,6 @@
 ﻿@using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 @{ if (Events.Count == 0)
     {
@@ -61,14 +62,28 @@
     [Parameter]
     public string EventsDescription { get; set; } = "Focussed Events";
 
+    [Parameter]
+    public int ShowItemNumber { get; set; } = 0;
+
     private MudCarousel<CalendarEvent> _carouselEvents = null!;
 
     protected override async Task OnParametersSetAsync()
     {
+        if (_carouselEvents == null)
+        {
+            await Task.Delay(10); // Wait for the carousel to initialize
+            Snackbar.Add("Carousel reference was null, waited for initialization.", Severity.Info);
+        }
+
         await base.OnParametersSetAsync();
         if (_carouselEvents != null)
         {
-            _carouselEvents.MoveTo(0);
+            Snackbar.Add($"Moving to item {ShowItemNumber}", Severity.Info);
+            _carouselEvents.MoveTo(ShowItemNumber);
+        }
+        else
+        {
+            Snackbar.Add($"Carousel reference is null, so not moving to item {ShowItemNumber}", Severity.Warning);
         }
     }
 
