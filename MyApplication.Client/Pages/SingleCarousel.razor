@@ -1,0 +1,75 @@
+@page "/singlecarousel"
+@using MyApplication.Client.Components
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+<PageTitle>Single Carousel</PageTitle>
+
+<MudText Typo="Typo.h4" GutterBottom="true">Carousel</MudText>
+<div style="max-width:500px">
+    <MudGrid>
+        <MudItem xs="6">
+            <MudDatePicker Label="Date:" Date="@_date" Editable="true" DateFormat="dd-MM-yyyy" DateChanged="DateChanged" />
+        </MudItem>
+        <MudItem xs="6">
+            <MudTimePicker Label="Time:" Time="@_time" Editable="true" TimeChanged="TimeChanged" />
+        </MudItem>        
+    </MudGrid>
+</div>
+<br/>
+    <MudGrid>
+        <MudItem xs="12">
+            <FocussedEventsCarousel Events="nearEvents" EventsDescription="Near Events"/>
+        </MudItem>                
+    </MudGrid>
+
+@inject HttpClient Http
+@code {
+    private List<CalendarEvent> events = new List<CalendarEvent>();
+    private DateTime? _date = DateTime.Today;
+    private TimeSpan? _time = DateTime.Now.TimeOfDay;
+    private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
+    private List<CalendarEvent> nearEvents = new List<CalendarEvent>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        if (result != null) 
+        {
+            events = result;
+            FillCarouselsWithEvents();
+        }
+    }
+
+    private void DateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            _date = date;
+        }
+        FillCarouselsWithEvents();
+    }
+
+    private void TimeChanged(TimeSpan? time)
+    {
+        if (time.HasValue)
+        {
+            _time = time;
+        }
+        FillCarouselsWithEvents();
+    }
+
+    private void FillCarouselsWithEvents()
+    {
+        if (_date.HasValue && _time.HasValue)
+        {
+            var previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Reverse().Take(5).Reverse().ToList();
+            var nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
+            
+            nearEvents = previousEvents.Concat(nextEvents).ToList();
+            Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
+        }
+    }
+}
