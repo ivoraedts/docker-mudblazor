@@ -1,4 +1,5 @@
 @page "/singlecarousel"
+@page "/singlecarousel/{ItemId:int}"
 @using MyApplication.Client.Components
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
@@ -19,7 +20,7 @@
 <br/>
     <MudGrid>
         <MudItem xs="12">
-            <FocussedEventsCarousel Events="nearEvents" ShowItemNumber="showItemNumber" EventsDescription="Near Events"/>
+            <FocussedEventsCarousel Events="nearEvents" ShowItemNumber="showItemNumber" EventsDescription="Near Events" RelativeReturnUrl="@ThisPageUrl"/>
         </MudItem>                
     </MudGrid>
 
@@ -31,6 +32,10 @@
     private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
     private List<CalendarEvent> nearEvents = new List<CalendarEvent>();
     private int showItemNumber = 0;
+    private const string ThisPageUrl = "singlecarousel";
+    
+    [Parameter]
+    public int ItemId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -39,6 +44,17 @@
         if (result != null) 
         {
             events = result;
+            
+            if (ItemId > 0)
+            {
+                var returnEvent = events.FirstOrDefault(ev => ev.Id == ItemId);
+                if (returnEvent != null)
+                {
+                    _date = returnEvent.TimeStamp.Date;
+                    _time = returnEvent.TimeStamp.TimeOfDay;
+                }
+            }
+            
             FillCarouselsWithEvents();
         }
     }

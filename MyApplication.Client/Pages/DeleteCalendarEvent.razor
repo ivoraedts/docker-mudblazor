@@ -1,4 +1,5 @@
 @page "/deletecalendarevent/{ItemId:int}"
+@page "/deletecalendarevent/{ItemId:int}/{RelativeReturnUrl}"
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
 
@@ -48,6 +49,9 @@
 
     [Parameter]
     public int ItemId { get; set; }
+    
+    [Parameter]
+    public string? RelativeReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,7 +67,31 @@
             _imageUrl = result.ImageFilePath ?? string.Empty;
         }
     }
+    
+    private string getRedirectUri()
+    {
+        if (string.IsNullOrEmpty(RelativeReturnUrl))
+        {
+            return $"/calendarevent/{ItemId}";
+        }
+        else
+        {
+            return $"/{RelativeReturnUrl}/{ItemId}";
+        }
+    }
 
+    private string getRedirectUriExcludingItemId()
+    {
+        if (string.IsNullOrEmpty(RelativeReturnUrl))
+        {
+            return $"/calendarevent";
+        }
+        else
+        {
+            return $"/{RelativeReturnUrl}";
+        }
+    }
+    
     private async Task DeleteItem()
     {
         var apiUrl = NavigationManager.BaseUri + $"api/calendarevent/{ItemId}";
@@ -71,12 +99,12 @@
     
         if (response.IsSuccessStatusCode)
         {
-            NavigationManager.NavigateTo($"/calendarevent");
+            NavigationManager.NavigateTo(getRedirectUriExcludingItemId());
         }
     }
 
     private void Undo()
     {
-        NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+        NavigationManager.NavigateTo(getRedirectUri());
     }
 }

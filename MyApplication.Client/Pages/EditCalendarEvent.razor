@@ -1,4 +1,5 @@
 @page "/editcalendarevent/{ItemId:int}"
+@page "/editcalendarevent/{ItemId:int}/{RelativeReturnUrl}"
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
 
@@ -79,7 +80,9 @@
 
     [Parameter]
     public int ItemId { get; set; }
-
+    
+    [Parameter]
+    public string? RelativeReturnUrl { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -148,7 +151,7 @@
 
                 if (response.IsSuccessStatusCode)
                 {
-                    NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+                    NavigationManager.NavigateTo(getRedirectUri());
                     return;
                 }
 
@@ -164,8 +167,20 @@
         StateHasChanged();
     }
 
+    private string getRedirectUri()
+    {
+        if (string.IsNullOrEmpty(RelativeReturnUrl))
+        {
+            return $"/calendarevent/{ItemId}";
+        }
+        else
+        {
+            return $"/{RelativeReturnUrl}/{ItemId}";
+        }
+    }
+
     private void Undo()
     {
-        NavigationManager.NavigateTo($"/calendarevent/{ItemId}");
+        NavigationManager.NavigateTo(getRedirectUri());
     }
 }

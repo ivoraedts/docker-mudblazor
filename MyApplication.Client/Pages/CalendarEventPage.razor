@@ -51,13 +51,13 @@
     private MudTable<CalendarEvent> _table = null!;
     private List<CalendarEvent> events = new List<CalendarEvent>();
     private CalendarEvent? selectedEvent;
+    private const string ThisPageUrl = "calendarevent";
 
     [Parameter]
     public int ItemId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Snackbar.Add($"Loading events..", Severity.Info);
         var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
         var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
         if (result != null) events = result;
@@ -69,7 +69,6 @@
             if (selectedEvent != null)
             {
                 _table.SetSelectedItem(selectedEvent);
-                Snackbar.Add($"Selected event {ItemId}.", Severity.Success);
             }
             else
             {
@@ -80,12 +79,12 @@
 
     private void EditMe(CalendarEvent item)
     {
-        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
+        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}/{ThisPageUrl}");
     }
 
     private async void DeleteMe(CalendarEvent item)
     {
-        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
+        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}/{ThisPageUrl}");
     }
 
     private void RowClickEvent(TableRowClickEventArgs<CalendarEvent> args)
