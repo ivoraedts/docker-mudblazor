@@ -1,8 +1,28 @@
 ﻿@page "/CoolGraph"
 <h3>CoolGraph</h3>
 
-Eeeej man!
+<MudPaper Class="doc-section-component-container">
+    <MudChart ChartType="ChartType.StackedBar" ChartSeries="@Series" XAxisLabels="@XAxisLabels" ChartOptions="@ChartOptions" ></MudChart>
+</MudPaper>
 
 @code {
-    
+    public List<ChartSeries> Series = new List<ChartSeries>()
+    {
+        new() { Name = "Fake", Data = new double[] { 40, 20, 25, 27, 46, 46, 48, 44, 15, 11, 11, 11 } },
+        new() { Name = "Data", Data = new double[] { 19, 24, 35, 13, 28, 15, 13, 16, 40, 11, 11, 11 } },
+        new() { Name = "Prefilled", Data = new double[] { 8, 6, 11, 13, 4, 16, 10, 16, 20, 11, 11, 11 } },
+    };
+    public string[] XAxisLabels = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+
+    public ChartOptions ChartOptions = new ChartOptions
+    { ChartPalette = new string[]
+        {
+            "#fefb97", //yellow
+            "#f3ae3d", //orange 
+            "#86b953" //green
+            //#2660f5 //blue
+            //#aa395d //bordeaux
+        }
+    };
+
 }
