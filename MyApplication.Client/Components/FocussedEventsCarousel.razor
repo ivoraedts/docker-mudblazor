@@ -63,6 +63,9 @@
 
     [Parameter]
     public int ShowItemNumber { get; set; } = 0;
+    
+    [Parameter]
+    public string? RelativeReturnUrl { get; set; }
 
     private MudCarousel<CalendarEvent> _carouselEvents = null!;
 
@@ -79,14 +82,26 @@
             _carouselEvents.MoveTo(ShowItemNumber);
         }
     }
+    
+    private string getRedirectUri()
+    {
+        if (string.IsNullOrEmpty(RelativeReturnUrl))
+        {
+            return $"calendarevent";
+        }
+        else
+        {
+            return $"{RelativeReturnUrl}";
+        }
+    }
 
     private void EditMe(CalendarEvent item)
     {
-        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}");
+        NavigationManager.NavigateTo($"/editcalendarevent/{item.Id}/{getRedirectUri()}");
     }
 
     private async void DeleteMe(CalendarEvent item)
     {
-        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}");
+        NavigationManager.NavigateTo($"/deletecalendarevent/{item.Id}/{getRedirectUri()}");
     }
 }

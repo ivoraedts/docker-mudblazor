@@ -1,4 +1,5 @@
 @page "/carousel"
+@page "/carousel/{ItemId:int}"
 @using MyApplication.Client.Components
 @using MyApplication.Client.Models
 @inject NavigationManager NavigationManager
@@ -21,10 +22,10 @@
 <br/>
     <MudGrid>
         <MudItem xs="6">
-            <FocussedEventsCarousel Events="nextEvents" EventsDescription="Next Events"/>
+            <FocussedEventsCarousel Events="nextEvents" EventsDescription="Next Events" RelativeReturnUrl="@ThisPageUrl"/>
         </MudItem>                
         <MudItem xs="6">
-            <FocussedEventsCarousel Events="previousEvents" EventsDescription="Previous Events" />
+            <FocussedEventsCarousel Events="previousEvents" EventsDescription="Previous Events"  RelativeReturnUrl="@ThisPageUrl"/>
         </MudItem>        
     </MudGrid>
 
@@ -36,7 +37,10 @@
     private DateTime combinedDateTime => _date.HasValue && _time.HasValue ? _date.Value.Date + _time.Value : DateTime.Now;
     private List<CalendarEvent> nextEvents = new List<CalendarEvent>();
     private List<CalendarEvent> previousEvents = new List<CalendarEvent>();
+    private const string ThisPageUrl = "carousel";
 
+    [Parameter]
+    public int ItemId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -45,6 +49,21 @@
         if (result != null) 
         {
             events = result;
+            
+            if (ItemId > 0)
+            {
+                var returnEvent = events.FirstOrDefault(ev => ev.Id == ItemId);
+                if (returnEvent != null)
+                {
+                    // small hack: the item will be shown on the Next Event page regardless of on which it was first selected.
+                    _date = returnEvent.TimeStamp.Date;
+                    _time = returnEvent.TimeStamp.TimeOfDay;
+                }
+                else
+                {
+                    Snackbar.Add($"cannot find item {ItemId}", Severity.Warning);
+                }
+            }
             FillCarouselsWithEvents();
         }
     }
@@ -74,8 +93,6 @@
             nextEvents = events.Where(e => e.TimeStamp >= combinedDateTime).Take(5).ToList();
 
             previousEvents = events.Where(e => e.TimeStamp < combinedDateTime).Reverse().Take(5).ToList();
-
-            Snackbar.Add($"{nextEvents.Count} next events and {previousEvents.Count} previous events", Severity.Info);
         }
     }
 }
