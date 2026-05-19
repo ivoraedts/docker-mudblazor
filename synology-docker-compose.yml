@@ -20,9 +20,9 @@ services:
       # Connection string for the database (overrides appsettings.json)
       ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
       S3__ServiceURL: "http://minio:9000"
-      # Instead of the Synology local IP adress, you can better use the QuickConnect ID or a DDNS hostname
-      S3__PublicURL: "http://192.168.2.16:9000/"
-      # Other configurable parameters can go here
+      #S3__PublicURL: "http://192.168.2.16:9000/" <- the old, unsecure URL, which works on the local network, but not from outside.
+      #S3__PublicURL: "http://YOURNAME.direct.quickconnect.to:9000/"  <- the old, unsecure URL, which worked from outside, but will be stopped.
+      S3__PublicURL: "https://YOURNAME.synology.me:8999/"      
       ASPNETCORE_ENVIRONMENT: Production
 
   postgres:
