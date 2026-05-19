@@ -813,6 +813,125 @@ services:
       - "8080:8080"
 ```
 
+## HTTPS Via Synology
+
+### Take two
+
+As I was adding [another project](https://github.com/ivoraedts/da-vue) to the Synology, I found out that it was much better to arrange HTTPS via Synology than what I did here before.
+Step one of bringing that to this project, is removing all HTTPS stuff that I did and just falling back on plain HTTP.
+Then the next step is to arrange the SSL keys and the routing via Synology via Synology.me.
+Then use Reverse Proxy in the Synology to redirect that last part to HTTP via another port.
+
+So with plain HTTP I was accessing Docker MudBlazor (web+API) over port 3080 and Minio (for the images) over port 9000.
+I decided to configure:
+- HTTPS to Docker MudBlazor over port 3081 and reverse proxy that to 3080 over HTTP in the Synology
+- HTTPS to Minio over port 8999 and reverse proxy that to 9000 over HTTP in the Synology.
+
+Reverse proxy: set up in `Control Panel > Login Portal > Advanced > Reverse Proxy`.
+
+Dutch version: `Configuratiescherm > Aanmeldingsportaal > Geavanceerd > Reverse Proxy`.
+
+![MudDatePicker](/assets/images/ReverseProxyInSynology.png)
+
+Next to that, it was also time to update the firewall rules, so outside traffic is only forwarded to the Synology on ports 3081 and 8999.
+![MudDatePicker](/assets/images/Firewall-config.png)
+
+And also I had to touch the Docker Compose file for Synology:
+
+#### The resulting Synology project (aka docker-compose) file:
+```
+networks:
+  docker-mudblazor:
+    external: false
+
+services:
+  docker-mudblazor:
+    image: ivoraedts/hello-docker-mudblazor:latest
+    depends_on:
+      postgres: 
+        condition: service_healthy
+        restart: true
+    networks:
+      - docker-mudblazor
+    volumes:
+      - ./docker/mudblazor:/app/data
+    ports:
+      # <Host Port>:<Container Port>
+      - "3080:8080"
+    environment:
+      # Connection string for the database (overrides appsettings.json)
+      ConnectionStrings__MudBlazorDatabase: "Host=postgres:5432; Database=SomeTestDatabase; Username=user-name; Password=strong-password"
+      S3__ServiceURL: "http://minio:9000"
+      #S3__PublicURL: "http://192.168.2.16:9000/" <- the old, unsecure URL, which works on the local network, but not from outside.
+      #S3__PublicURL: "http://YOURNAME.direct.quickconnect.to:9000/"  <- the old, unsecure URL, which worked from outside, but will be stopped.
+      S3__PublicURL: "https://YOURNAME.synology.me:8999/"      
+      ASPNETCORE_ENVIRONMENT: Production
+
+  postgres:
+    image: postgres:latest
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 10s
+    container_name: docker-mudblazor.postgres
+    #command: postgres -c max_connections=100
+    volumes:  
+    # This fix applies to version 18 and later. before it could mount to /var/lib/postgresql/data
+    # This fix applies to version 18 and later: mount to /var/lib/postgresql/docker works, but does not persist
+      - ./docker/pgdata:/var/lib/postgresql
+    networks:
+      - docker-mudblazor
+    environment:
+      POSTGRES_USER: user-name
+      POSTGRES_PASSWORD: strong-password
+    ports:
+      # <Host Port>:<Container Port>
+      - "1234:5432"   
+
+  minio:
+    image: minio/minio:latest
+    container_name: docker-mudblazor.minio
+    networks:
+      - docker-mudblazor
+    volumes:
+      - ./docker/minio/data:/data
+    ports:
+      # MinIO API
+      - "9000:9000"
+      # MinIO Web Console
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: minio server /data --console-address ":9001"
+    
+  minio-init:
+    image: minio/mc:latest
+    container_name: docker-mudblazor.minio-init
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      /usr/bin/mc mb myminio/calendar-events --ignore-existing;
+      /usr/bin/mc anonymous set public myminio/calendar-events;
+      exit 0;
+      "
+    networks:
+      - docker-mudblazor
+
+  adminer:
+    image: adminer:latest
+    container_name: docker-mudblazor.adminer    
+    networks:
+      - docker-mudblazor
+    ports:
+      # <Host Port>:<Container Port>
+      - "8080:8080"
+```
+
 ## Commenting the stuff in GitHub
 
 When making all this documentation, I sometimes peaked at this documentation of the [markdown stuff](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
