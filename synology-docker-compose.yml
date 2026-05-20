@@ -24,11 +24,14 @@ services:
       #S3__PublicURL: "http://YOURNAME.direct.quickconnect.to:9000/"  <- the old, unsecure URL, which worked from outside, but will be stopped.
       S3__PublicURL: "https://YOURNAME.synology.me:8999/"      
       ASPNETCORE_ENVIRONMENT: Production
+      # About page admin links (override if you expose these differently on Synology)
+      AdminLinks__DbAdminUrl: "http://192.168.2.16:8081/"
+      AdminLinks__MinioConsoleUrl: "http://192.168.2.16:9001/"
 
   postgres:
     image: postgres:latest
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase -U user-name"]
       interval: 10s
       retries: 5
       start_period: 10s

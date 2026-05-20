@@ -58,8 +58,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
-        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>("api/calendarevent");
         if (result != null) events = result;
 
         // highlight the item if ItemId is provided

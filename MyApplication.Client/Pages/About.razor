@@ -1,0 +1,56 @@
+@page "/about"
+@using System.Net.Http.Json
+@using MyApplication.Client.Models
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+
+<PageTitle>About</PageTitle>
+
+<MudText Typo="Typo.h3" GutterBottom="true">About</MudText>
+
+<MudPaper Elevation="4" Class="pa-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Application</MudText>
+    <MudText><b>Build date:</b> @Version</MudText>
+</MudPaper>
+
+<MudPaper Elevation="4" Class="pa-4 mt-4">
+    <MudText Typo="Typo.h6" GutterBottom="true">Admin links</MudText>
+    <MudText Class="mb-2" Typo="Typo.body2">
+        This only works when accessing the app via the local network.
+    </MudText>
+
+    <MudStack Spacing="2" Row="true">
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="@DbAdminUrl" Target="_blank" StartIcon="@Icons.Material.Filled.Storage">
+            Open DB Admin
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" Href="@MinioConsoleUrl" Target="_blank" StartIcon="@Icons.Material.Filled.Cloud">
+            Open MinIO Console
+        </MudButton>
+    </MudStack>
+
+    <MudDivider Class="my-4" />
+
+    <MudText><b>DB admin:</b> <MudLink Href="@DbAdminUrl" Target="_blank">@DbAdminUrl</MudLink></MudText>
+    <MudText><b>MinIO console:</b> <MudLink Href="@MinioConsoleUrl" Target="_blank">@MinioConsoleUrl</MudLink></MudText>
+</MudPaper>
+
+@code {
+    private AdminLinks? _adminLinks;
+
+    private string Version => _adminLinks?.Version ?? "Unknown Version";
+    private string DbAdminUrl => _adminLinks?.DbAdminUrl?.Trim().TrimEnd('/') ?? "Unknown URL";
+    private string MinioConsoleUrl => _adminLinks?.MinioConsoleUrl?.Trim().TrimEnd('/') ?? "Unknown URL";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _adminLinks = await Http.GetFromJsonAsync<AdminLinks>("api/adminlinks");
+        }
+        catch
+        {
+            _adminLinks = null;
+        }
+    }
+}
+

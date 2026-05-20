@@ -36,8 +36,7 @@
         var detailedEvents = new double[12];
         var completeEvents = new double[12];
 
-        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
-        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>(apiUrl);
+        var result = await Http.GetFromJsonAsync<List<CalendarEvent>>("api/calendarevent");
 
         if (result != null)
         {

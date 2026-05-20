@@ -61,13 +61,13 @@ public class CalendarEventController : ControllerBase
 
     // POST: api/Values
     [HttpPost]
-    public async Task<ActionResult<CalendarEvent>> PostCalendarEvent([FromForm] string title, [FromForm] string titleColor, [FromForm] string description, [FromForm] DateTime timeStamp, [FromForm] IFormFile? file)
+    public async Task<ActionResult<CalendarEvent>> PostCalendarEvent([FromForm] string title, [FromForm] string titleColor, [FromForm] string? description, [FromForm] DateTime timeStamp, [FromForm] IFormFile? file)
     {        
         var calendarEvent = new CalendarEvent
         {
             Title = title,
             TitleColor = titleColor,
-            Description = description,
+            Description = description ?? string.Empty,
             TimeStamp = timeStamp
         };
         
@@ -115,7 +115,7 @@ public class CalendarEventController : ControllerBase
 
     // PUT: api/Values/5
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutCalendarEvent(int id, [FromForm] string title, [FromForm] string titleColor, [FromForm] string description, [FromForm] DateTime timeStamp, [FromForm] string? imageFilePath, [FromForm] IFormFile? file)
+    public async Task<IActionResult> PutCalendarEvent(int id, [FromForm] string title, [FromForm] string titleColor, [FromForm] string? description, [FromForm] DateTime timeStamp, [FromForm] string? imageFilePath, [FromForm] IFormFile? file)
     {
         // Treat empty or whitespace imageFilePath as null (cleared image)
         if (string.IsNullOrWhiteSpace(imageFilePath))
@@ -128,7 +128,7 @@ public class CalendarEventController : ControllerBase
             Id = id,
             Title = title,
             TitleColor = titleColor,
-            Description = description,
+            Description = description ?? string.Empty,
             TimeStamp = timeStamp,
             ImageFilePath = imageFilePath
         };
