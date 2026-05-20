@@ -54,26 +54,26 @@
                 }
             }
             
-            FillCarouselsWithEvents();
+            await FillCarouselsWithEvents();
         }
     }
 
-    private void DateChanged(DateTime? date)
+    private async Task DateChanged(DateTime? date)
     {
         if (date.HasValue)
         {
             _date = date;
         }
-        FillCarouselsWithEvents();
+        await FillCarouselsWithEvents();
     }
 
-    private void TimeChanged(TimeSpan? time)
+    private async Task TimeChanged(TimeSpan? time)
     {
         if (time.HasValue)
         {
             _time = time;
         }
-        FillCarouselsWithEvents();
+        await FillCarouselsWithEvents();
     }
 
     private async Task FillCarouselsWithEvents()
