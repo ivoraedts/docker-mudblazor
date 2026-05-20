@@ -29,7 +29,7 @@ services:
   postgres:
     image: postgres:latest
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase"]
+      test: ["CMD-SHELL", "pg_isready -d SomeTestDatabase -U user-name"]
       interval: 10s
       retries: 5
       start_period: 10s
