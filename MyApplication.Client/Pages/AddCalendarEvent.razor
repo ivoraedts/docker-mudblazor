@@ -68,7 +68,7 @@ else
 
     private async Task AddItem()
     {
-        var apiUrl = NavigationManager.BaseUri + "api/calendarevent";
+        var apiUrl = "api/calendarevent";
         var combinedDateTime = _date.HasValue && _time.HasValue 
                 ? _date.Value.Date + _time.Value 
                 : DateTime.Now;        

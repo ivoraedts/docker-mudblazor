@@ -12,7 +12,6 @@ builder.Services.AddHttpClient("MyApplication");
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
 builder.Services.AddMudBlazorDbContext(builder.Configuration);
@@ -41,7 +40,6 @@ app.UseAntiforgery();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()
     .AddAdditionalAssemblies(typeof(MyApplication.Client._Imports).Assembly);
 
